@@ -1,13 +1,12 @@
-
-import React from 'react';
-import { Brain, FileText, Search, Zap } from 'lucide-react';
+import React from "react";
+import { Brain, FileText, Search, Zap } from "lucide-react";
 
 const WelcomeLogo: React.FC = () => {
   const features = [
     { icon: Brain, text: "AI-powered document analysis" },
     { icon: Search, text: "Intelligent search across your knowledge base" },
     { icon: FileText, text: "Comprehensive document understanding" },
-    { icon: Zap, text: "Instant insights and recommendations" }
+    { icon: Zap, text: "Instant insights and recommendations" },
   ];
 
   return (
@@ -26,7 +25,7 @@ const WelcomeLogo: React.FC = () => {
       </div>
 
       {/* Features Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
         {features.map((feature, index) => (
           <div 
             key={index}
@@ -39,12 +38,13 @@ const WelcomeLogo: React.FC = () => {
           </div>
         ))}
       </div>
-
+ */}
       {/* Call to Action */}
       <div className="mt-12 p-6 rounded-2xl bg-gradient-to-r from-slate-800/50 to-slate-700/50 border border-slate-600/50 backdrop-blur-sm max-w-2xl mx-auto">
         <p className="text-slate-300 text-lg mb-2">Ready to get started?</p>
         <p className="text-slate-400">
-          Upload your documents, ask questions, or explore your knowledge base using the tools above.
+          Upload your documents, ask questions, or explore your knowledge base
+          using the tools above.
         </p>
       </div>
     </div>

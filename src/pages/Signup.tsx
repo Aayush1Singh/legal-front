@@ -1,31 +1,69 @@
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Brain, Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useForm, Resolver } from "react-hook-form";
+import { SignupHandler } from "@/services/LoginHandler";
+import { useNavigate } from "react-router-dom";
+type FormValues = {
+  fullName: string;
+  password: string;
+  email: string;
+  confirm_email: string;
+};
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Brain, Mail, Lock, User, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+const resolver: Resolver<FormValues> = async (values) => {
+  return {
+    values: values.fullName ? values : {},
+    errors: !values.fullName
+      ? {
+          fullName: {
+            type: "required",
+            message: "This is required.",
+          },
+        }
+      : {},
+  };
+};
 
+interface Response {
+  message: string;
+}
 const Signup: React.FC = () => {
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({ resolver });
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
+  async function onSubmit(data) {
+    console.log(data);
+    const { fullName, email, password } = data;
+    const response = (await SignupHandler(
+      email,
+      password,
+      fullName
+    )) as Response;
+    console.log(response);
+    if (response.message === "success") {
+      navigate("/u");
+    }
+  }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle signup logic here
-    console.log('Signup attempt:', formData);
-  };
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   // Handle signup logic here
+  //   console.log("Signup attempt:", formData);
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
@@ -43,9 +81,11 @@ const Signup: React.FC = () => {
 
         {/* Signup Form */}
         <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-slate-300">Full Name</Label>
+              <Label htmlFor="name" className="text-slate-300">
+                Full Name
+              </Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <Input
@@ -53,8 +93,7 @@ const Signup: React.FC = () => {
                   name="name"
                   type="text"
                   placeholder="Enter your full name"
-                  value={formData.name}
-                  onChange={handleInputChange}
+                  {...register("fullName")}
                   className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                   required
                 />
@@ -62,7 +101,9 @@ const Signup: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-300">Email</Label>
+              <Label htmlFor="email" className="text-slate-300">
+                Email
+              </Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <Input
@@ -70,8 +111,7 @@ const Signup: React.FC = () => {
                   name="email"
                   type="email"
                   placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={handleInputChange}
+                  {...register("email")}
                   className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                   required
                 />
@@ -79,7 +119,9 @@ const Signup: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-slate-300">Password</Label>
+              <Label htmlFor="password" className="text-slate-300">
+                Password
+              </Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <Input
@@ -87,8 +129,7 @@ const Signup: React.FC = () => {
                   name="password"
                   type="password"
                   placeholder="Create a password"
-                  value={formData.password}
-                  onChange={handleInputChange}
+                  {...register("password")}
                   className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                   required
                 />
@@ -96,7 +137,9 @@ const Signup: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-slate-300">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-slate-300">
+                Confirm Password
+              </Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <Input
@@ -104,8 +147,7 @@ const Signup: React.FC = () => {
                   name="confirmPassword"
                   type="password"
                   placeholder="Confirm your password"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
+                  {...register("confirm_email")}
                   className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                   required
                 />
@@ -123,8 +165,11 @@ const Signup: React.FC = () => {
 
           <div className="mt-6 text-center">
             <p className="text-slate-400">
-              Already have an account?{' '}
-              <Link to="/login" className="text-blue-400 hover:text-blue-300 transition-colors font-medium">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="text-blue-400 hover:text-blue-300 transition-colors font-medium"
+              >
                 Sign in
               </Link>
             </p>
@@ -134,7 +179,8 @@ const Signup: React.FC = () => {
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-slate-500 text-sm">
-            By creating an account, you agree to our Terms of Service and Privacy Policy
+            By creating an account, you agree to our Terms of Service and
+            Privacy Policy
           </p>
         </div>
       </div>

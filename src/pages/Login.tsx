@@ -1,20 +1,55 @@
-
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Brain, Mail, Lock, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-
-const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle login logic here
-    console.log('Login attempt:', { email, password });
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Brain, Mail, Lock, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useForm, Resolver } from "react-hook-form";
+import { LoginHandler } from "@/services/LoginHandler";
+type FormValues = {
+  fullName: string;
+  password: string;
+  email: string;
+  confirm_email: string;
+};
+const resolver: Resolver<FormValues> = async (values) => {
+  return {
+    values: values.email ? values : {},
+    errors: !values.email
+      ? {
+          email: {
+            type: "required",
+            message: "This is required.",
+          },
+        }
+      : {},
   };
+};
+interface Response {
+  message: string;
+}
+const Login: React.FC = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({ resolver });
+  async function onSubmit(data) {
+    const { email, password } = data;
+    const response = (await LoginHandler(email, password)) as Response;
+    if (response.message === "success") {
+      navigate("/u");
+    }
+    console.log(data);
+  }
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   // Handle login logic here
+  //   console.log("Login attempt:", { email, password });
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
@@ -32,17 +67,18 @@ const Login: React.FC = () => {
 
         {/* Login Form */}
         <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-300">Email</Label>
+              <Label htmlFor="email" className="text-slate-300">
+                Email
+              </Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  {...register("email")}
                   className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                   required
                 />
@@ -50,15 +86,16 @@ const Login: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-slate-300">Password</Label>
+              <Label htmlFor="password" className="text-slate-300">
+                Password
+              </Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <Input
                   id="password"
                   type="password"
                   placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  {...register("password")}
                   className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                   required
                 />
@@ -66,7 +103,10 @@ const Login: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-between">
-              <Link to="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+              >
                 Forgot password?
               </Link>
             </div>
@@ -82,8 +122,11 @@ const Login: React.FC = () => {
 
           <div className="mt-6 text-center">
             <p className="text-slate-400">
-              Don't have an account?{' '}
-              <Link to="/signup" className="text-blue-400 hover:text-blue-300 transition-colors font-medium">
+              Don't have an account?{" "}
+              <Link
+                to="/signup"
+                className="text-blue-400 hover:text-blue-300 transition-colors font-medium"
+              >
                 Sign up
               </Link>
             </p>

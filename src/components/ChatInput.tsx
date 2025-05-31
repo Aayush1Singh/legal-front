@@ -1,31 +1,35 @@
-
-import React, { useState, useRef } from 'react';
-import { Send, Paperclip, Mic } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
-
+import React, { useState, useRef } from "react";
+import { Send, Paperclip, Mic } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { useForm } from "react-hook-form";
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   onFileUpload?: (file: File) => void;
   disabled?: boolean;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onFileUpload, disabled }) => {
-  const [message, setMessage] = useState('');
+const ChatInput: React.FC<ChatInputProps> = ({
+  onSendMessage,
+  onFileUpload,
+  disabled,
+}) => {
+  const [message, setMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim() && !disabled) {
       onSendMessage(message.trim());
-      setMessage('');
+      setMessage("");
     }
+
+    console.log(message);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
     }
@@ -34,7 +38,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onFileUpload, disa
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.type === 'application/pdf') {
+      if (file.type === "application/pdf") {
         onFileUpload?.(file);
         toast({
           title: "File uploaded successfully",
@@ -50,7 +54,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onFileUpload, disa
     }
     // Reset file input
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
@@ -93,10 +97,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onFileUpload, disa
               disabled={disabled}
               className="min-h-0 resize-none border-0 bg-transparent text-white placeholder-slate-400 focus:ring-0 focus:ring-offset-0 p-0 text-sm leading-6"
               rows={1}
-              style={{ 
-                minHeight: '24px',
-                maxHeight: '120px',
-                overflow: message.length > 100 ? 'auto' : 'hidden'
+              style={{
+                minHeight: "24px",
+                maxHeight: "120px",
+                overflow: message.length > 100 ? "auto" : "hidden",
               }}
             />
           </div>
@@ -125,7 +129,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onFileUpload, disa
 
         {/* Helper Text */}
         <p className="text-xs text-slate-500 mt-2 text-center">
-          Press Enter to send, Shift + Enter for new line • Click 📎 to upload PDF files
+          Press Enter to send, Shift + Enter for new line • Click 📎 to upload
+          PDF files
         </p>
       </form>
     </div>

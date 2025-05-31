@@ -1,7 +1,14 @@
-
-import React from 'react';
-import { MessageSquare, Plus, Upload, Search, Settings, FileText, History } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React, { useEffect, useState } from "react";
+import {
+  MessageSquare,
+  Plus,
+  Upload,
+  Search,
+  Settings,
+  FileText,
+  History,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -13,21 +20,65 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
+} from "@/components/ui/sidebar";
+import { newSession, prevChats } from "@/services/ChatHandler";
+import { useNavigate, useLocation } from "react-router-dom";
 
+interface Response {
+  session_id: string;
+}
+interface conversation {
+  session_id: string;
+}
 const AppSidebar: React.FC = () => {
-  const conversations = [
-    { id: 1, title: "Document Analysis Q&A", time: "2 min ago", preview: "Can you explain the main findings..." },
-    { id: 2, title: "Research Paper Review", time: "1 hour ago", preview: "What are the key methodologies..." },
-    { id: 3, title: "Legal Document Query", time: "Yesterday", preview: "Please summarize the contract..." },
-  ];
+  // const conversations: conversation[] = [];
+  const [conversations, setConversations] = useState<string[]>([]);
 
+  useEffect(() => {
+    async function getChats() {
+      const res = await prevChats();
+      console.log(res);
+      setConversations(res.reverse());
+    }
+
+    getChats();
+  }, []);
+
+  // const conversations = [
+  //   {
+  //     id: 1,
+  //     title: "Document Analysis Q&A",
+  //     time: "2 min ago",
+  //     preview: "Can you explain the main findings...",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Research Paper Review",
+  //     time: "1 hour ago",
+  //     preview: "What are the key methodologies...",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Legal Document Query",
+  //     time: "Yesterday",
+  //     preview: "Please summarize the contract...",
+  //   },
+  // ];
+  const Navigate = useNavigate();
+  const location = useLocation();
   const mainActions = [
     { icon: Upload, label: "Upload Documents", action: () => {} },
     { icon: Search, label: "Search Knowledge", action: () => {} },
     { icon: FileText, label: "Document Library", action: () => {} },
   ];
-
+  const searchParams = new URLSearchParams(location.search);
+  const navigate = useNavigate();
+  async function createSession() {
+    const response = (await newSession()) as Response;
+    console.log(response);
+    searchParams.set("session_id", response.session_id);
+    navigate(`?${searchParams.toString()}`);
+  }
   return (
     <Sidebar className="border-slate-700/50">
       <SidebarHeader className="p-6 border-b border-slate-700/50">
@@ -36,8 +87,11 @@ const AppSidebar: React.FC = () => {
             RAG Assistant
           </h1>
         </div>
-        
-        <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 shadow-lg">
+
+        <Button
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 shadow-lg"
+          onClick={createSession}
+        >
           <Plus className="w-4 h-4 mr-2" />
           New Conversation
         </Button>
@@ -45,12 +99,14 @@ const AppSidebar: React.FC = () => {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-400">Actions</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-slate-400">
+            Actions
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainActions.map((item) => (
                 <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton 
+                  <SidebarMenuButton
                     onClick={item.action}
                     className="text-slate-300 hover:text-white hover:bg-slate-700/50"
                   >
@@ -64,18 +120,38 @@ const AppSidebar: React.FC = () => {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-400">Recent Conversations</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-slate-400">
+            Recent Conversations
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {conversations.map((conv) => (
-                <SidebarMenuItem key={conv.id}>
-                  <SidebarMenuButton className="text-slate-300 hover:text-white hover:bg-slate-700/50 h-auto p-3">
+              {conversations?.map((conv, index) => (
+                <SidebarMenuItem key={index}>
+                  <SidebarMenuButton
+                    className="text-slate-300 hover:text-white hover:bg-slate-700/50 h-auto p-3"
+                    onClick={() => {
+                      const params = new URLSearchParams(location.search);
+
+                      params.set("session_id", conv);
+                      navigate(`${location.pathname}?${params.toString()}`, {
+                        replace: true,
+                      });
+                    }}
+                  >
                     <div className="flex items-start space-x-3 w-full">
                       <MessageSquare className="w-4 h-4 text-blue-400 mt-1 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">{conv.title}</p>
-                        <p className="text-xs text-slate-400 truncate mt-1">{conv.preview}</p>
-                        <p className="text-xs text-slate-500 mt-1">{conv.time}</p>
+                        <p className="text-sm font-medium text-white truncate">
+                          {conv}
+
+                          {/* {conv.title} */}
+                        </p>
+                        <p className="text-xs text-slate-400 truncate mt-1">
+                          {/* {conv.preview} */}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {/* {conv.time} */}
+                        </p>
                       </div>
                     </div>
                   </SidebarMenuButton>

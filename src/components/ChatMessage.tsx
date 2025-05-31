@@ -1,31 +1,30 @@
-
-import React from 'react';
-import { User, Bot, Copy, ThumbsUp, ThumbsDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { User, Bot, Copy, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ChatMessageProps {
-  message: {
-    id: string;
-    type: 'user' | 'assistant';
-    content: string;
-    timestamp: Date;
-    sources?: string[];
-  };
+  message: string;
+  type: string;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
-  const isUser = message.type === 'user';
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, type }) => {
+  const isUser = type === "user";
 
   return (
-    <div className={`flex gap-4 mb-6 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+    <div
+      className={`flex gap-4 mb-6 ${isUser ? "flex-row-reverse" : "flex-row"}`}
+    >
       {/* Avatar */}
-      <div className={`
+      <div
+        className={`
         flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
-        ${isUser 
-          ? 'bg-gradient-to-br from-blue-500 to-purple-600' 
-          : 'bg-gradient-to-br from-emerald-500 to-teal-600'
+        ${
+          isUser
+            ? "bg-gradient-to-br from-blue-500 to-purple-600"
+            : "bg-gradient-to-br from-emerald-500 to-teal-600"
         }
-      `}>
+      `}
+      >
         {isUser ? (
           <User className="w-5 h-5 text-white" />
         ) : (
@@ -34,22 +33,33 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       </div>
 
       {/* Message Content */}
-      <div className={`flex-1 max-w-3xl ${isUser ? 'flex flex-col items-end' : ''}`}>
-        <div className={`
+      <div
+        className={`flex-1 max-w-3xl ${
+          isUser ? "flex flex-col items-end" : ""
+        }`}
+      >
+        <div
+          className={`
           p-4 rounded-2xl shadow-lg backdrop-blur-sm
-          ${isUser 
-            ? 'bg-gradient-to-br from-blue-600 to-purple-600 text-white ml-auto' 
-            : 'bg-white/10 border border-white/20 text-slate-100'
+          ${
+            isUser
+              ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white ml-auto"
+              : "bg-white/10 border border-white/20 text-slate-100"
           }
-        `}>
+        `}
+        >
           <div className="prose prose-sm max-w-none">
-            <p className={`${isUser ? 'text-white' : 'text-slate-100'} leading-relaxed`}>
-              {message.content}
+            <p
+              className={`${
+                isUser ? "text-white" : "text-slate-100"
+              } leading-relaxed`}
+            >
+              {message}
             </p>
           </div>
 
           {/* Sources for assistant messages */}
-          {!isUser && message.sources && message.sources.length > 0 && (
+          {/* {!isUser  && message.sources.length > 0 && (
             <div className="mt-3 pt-3 border-t border-white/10">
               <p className="text-xs text-slate-400 mb-2">Sources:</p>
               <div className="flex flex-wrap gap-2">
@@ -63,23 +73,38 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Message Actions */}
         {!isUser && (
           <div className="flex items-center gap-2 mt-2">
-            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white h-8 px-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-slate-400 hover:text-white h-8 px-2"
+            >
               <Copy className="w-3 h-3" />
             </Button>
-            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white h-8 px-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-slate-400 hover:text-white h-8 px-2"
+            >
               <ThumbsUp className="w-3 h-3" />
             </Button>
-            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white h-8 px-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-slate-400 hover:text-white h-8 px-2"
+            >
               <ThumbsDown className="w-3 h-3" />
             </Button>
             <span className="text-xs text-slate-500 ml-2">
-              {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {/* {message.timestamp.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })} */}
             </span>
           </div>
         )}
@@ -87,7 +112,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         {/* User message timestamp */}
         {isUser && (
           <span className="text-xs text-slate-500 mt-2">
-            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {/* {message.timestamp.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })} */}
           </span>
         )}
       </div>
