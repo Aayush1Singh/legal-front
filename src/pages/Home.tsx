@@ -1,7 +1,14 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Brain, FileText, Search, Zap, ArrowRight, Upload, MessageSquare } from "lucide-react";
+import {
+  Brain,
+  FileText,
+  Search,
+  Zap,
+  ArrowRight,
+  Upload,
+  MessageSquare,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Home: React.FC = () => {
@@ -11,23 +18,27 @@ const Home: React.FC = () => {
     {
       icon: Brain,
       title: "AI-Powered Analysis",
-      description: "Advanced AI understands and analyzes your documents with unprecedented accuracy"
+      description:
+        "Advanced AI understands and analyzes your documents with unprecedented accuracy",
     },
     {
       icon: Search,
       title: "Intelligent Search",
-      description: "Find exactly what you need across your entire knowledge base instantly"
+      description:
+        "Find exactly what you need across your entire knowledge base instantly",
     },
     {
       icon: FileText,
       title: "Document Understanding",
-      description: "Upload PDFs and get comprehensive insights and answers to your questions"
+      description:
+        "Upload PDFs and get comprehensive insights and answers to your questions",
     },
     {
       icon: MessageSquare,
       title: "Natural Conversations",
-      description: "Chat naturally with your documents using advanced conversational AI"
-    }
+      description:
+        "Chat naturally with your documents using advanced conversational AI",
+    },
   ];
 
   return (
@@ -44,15 +55,15 @@ const Home: React.FC = () => {
             </span>
           </div>
           <div className="flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate('/login')}
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/login")}
               className="text-slate-300 hover:text-white"
             >
               Login
             </Button>
-            <Button 
-              onClick={() => navigate('/signup')}
+            <Button
+              onClick={() => navigate("/signup")}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
             >
               Sign Up
@@ -74,24 +85,25 @@ const Home: React.FC = () => {
               Document Assistant
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed mb-8">
-              Transform how you interact with documents. Upload, analyze, and get intelligent answers 
-              from your knowledge base using cutting-edge AI technology.
+              Transform how you interact with documents. Upload, analyze, and
+              get intelligent answers from your knowledge base using
+              cutting-edge AI technology.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Button 
+            <Button
               size="lg"
-              onClick={() => navigate('/u')}
+              onClick={() => navigate("/login")}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 text-lg px-8 py-6 h-auto"
             >
               Get Started
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
-            <Button 
+            <Button
               size="lg"
               variant="outline"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate("/login")}
               className="border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700/50 text-lg px-8 py-6 h-auto"
             >
               Learn More
@@ -107,21 +119,27 @@ const Home: React.FC = () => {
                     <Upload className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-white font-semibold">Upload Documents</h3>
-                  <p className="text-slate-400 text-sm">Drop your PDFs and let AI analyze them</p>
+                  <p className="text-slate-400 text-sm">
+                    Drop your PDFs and let AI analyze them
+                  </p>
                 </div>
                 <div className="flex flex-col items-center space-y-3">
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
                     <MessageSquare className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-white font-semibold">Ask Questions</h3>
-                  <p className="text-slate-400 text-sm">Chat naturally about your content</p>
+                  <p className="text-slate-400 text-sm">
+                    Chat naturally about your content
+                  </p>
                 </div>
                 <div className="flex flex-col items-center space-y-3">
                   <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center">
                     <Zap className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-white font-semibold">Get Insights</h3>
-                  <p className="text-slate-400 text-sm">Receive intelligent, contextual answers</p>
+                  <p className="text-slate-400 text-sm">
+                    Receive intelligent, contextual answers
+                  </p>
                 </div>
               </div>
             </div>
@@ -143,15 +161,19 @@ const Home: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <div 
+              <div
                 key={index}
                 className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 backdrop-blur-sm hover:bg-slate-800/50 transition-all duration-300 group"
               >
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <feature.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-white font-semibold mb-2">{feature.title}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{feature.description}</p>
+                <h3 className="text-white font-semibold mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed">
+                  {feature.description}
+                </p>
               </div>
             ))}
           </div>
@@ -166,11 +188,12 @@ const Home: React.FC = () => {
               Ready to Transform Your Workflow?
             </h2>
             <p className="text-xl text-slate-300 mb-8">
-              Join thousands of users who are already using RAG Assistant to unlock insights from their documents.
+              Join thousands of users who are already using RAG Assistant to
+              unlock insights from their documents.
             </p>
-            <Button 
+            <Button
               size="lg"
-              onClick={() => navigate('/u')}
+              onClick={() => navigate("/u")}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 text-lg px-8 py-6 h-auto"
             >
               Start Your Journey
