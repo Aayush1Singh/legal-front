@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-const apiUrl = process.env.REACT_APP_API_URL;
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 export async function newSession() {
   const response = await axios.post(
     `${apiUrl}/new_session`,

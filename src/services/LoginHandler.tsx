@@ -1,5 +1,5 @@
 import axios from "axios";
-const apiUrl = process.env.REACT_APP_API_URL;
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface Request {
   // Define the expected response structure here
