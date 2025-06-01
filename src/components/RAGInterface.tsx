@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { FileText, Gavel, Search } from "lucide-react";
+import { FileText, Gavel, Search, X } from "lucide-react";
 import AppSidebar from "./AppSidebar";
 import ChatMessage from "./ChatMessage";
 import TypingIndicator from "./TypingIndicator";
@@ -15,12 +15,19 @@ interface Message {
   response?: string;
 }
 
+interface UploadedFile {
+  name: string;
+  size: number;
+  uploadedAt: Date;
+}
+
 const RAGInterface: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [activeFeature, setActiveFeature] = useState<
     "similar" | "analyze" | "resolve"
   >("resolve");
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -30,6 +37,7 @@ const RAGInterface: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+
   const navigate = useNavigate();
   const [flag, setFlag] = useState(false);
   const handleSendMessage = async (content: string) => {
@@ -82,7 +90,27 @@ const RAGInterface: React.FC = () => {
 
   const handleFileUpload = (file: File) => {
     console.log("Uploaded file:", file.name);
-    // Handle PDF upload logic here
+    
+    // Add the file to the uploaded files list
+    const newFile: UploadedFile = {
+      name: file.name,
+      size: file.size,
+      uploadedAt: new Date()
+    };
+    
+    setUploadedFiles(prev => [...prev, newFile]);
+  };
+
+  const handleRemoveFile = (fileName: string) => {
+    setUploadedFiles(prev => prev.filter(file => file.name !== fileName));
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   const featureButtons = [
@@ -134,6 +162,41 @@ const RAGInterface: React.FC = () => {
               </h1>
             </div>
           </header>
+
+          {/* Uploaded Files Display */}
+          {uploadedFiles.length > 0 && (
+            <div className="border-b border-slate-700/50 bg-slate-900/30 backdrop-blur-sm p-4">
+              <div className="max-w-4xl mx-auto">
+                <h3 className="text-sm font-medium text-slate-300 mb-3">Uploaded Documents</h3>
+                <div className="flex flex-wrap gap-2">
+                  {uploadedFiles.map((file, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 backdrop-blur-sm"
+                    >
+                      <FileText className="w-4 h-4 text-red-400" />
+                      <div className="flex flex-col">
+                        <span className="text-sm text-slate-200 font-medium truncate max-w-[200px]">
+                          {file.name}
+                        </span>
+                        <span className="text-xs text-slate-400">
+                          {formatFileSize(file.size)}
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveFile(file.name)}
+                        className="text-slate-400 hover:text-red-400 h-6 w-6 p-0"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Chat Area */}
           <div className="flex-1 overflow-y-auto">
