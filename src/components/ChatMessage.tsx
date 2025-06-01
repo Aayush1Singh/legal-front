@@ -1,7 +1,7 @@
 import React from "react";
 import { User, Bot, Copy, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
+import ReactMarkdown from "react-markdown";
 interface ChatMessageProps {
   message: string;
   type: string;
@@ -54,7 +54,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, type }) => {
                 isUser ? "text-white" : "text-slate-100"
               } leading-relaxed`}
             >
-              {message}
+              <ReactMarkdown>{message}</ReactMarkdown>
             </p>
           </div>
 
