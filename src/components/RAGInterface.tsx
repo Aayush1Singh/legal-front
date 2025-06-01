@@ -121,14 +121,14 @@ const RAGInterface: React.FC = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex w-full">
+      <div className="!bg-black min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex w-full">
         <AppSidebar />
 
         <div className="flex-1 flex flex-col">
           {/* Header */}
           <header className="bg-slate-900/80 backdrop-blur-sm border-b border-slate-700/50 p-4">
             <div className="flex items-center gap-3">
-              <SidebarTrigger className="text-slate-400 hover:text-white" />
+              <SidebarTrigger className="text-slate-400 hover:text-white hover:bg-black" />
               <h1 className="text-lg font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 RAG Assistant
               </h1>
@@ -167,35 +167,36 @@ const RAGInterface: React.FC = () => {
           </div>
 
           {/* Feature Buttons */}
-          <div className="border-t border-slate-700/50 bg-slate-900/50 backdrop-blur-sm px-4 py-3">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex gap-2 justify-center">
-                {featureButtons.map(({ id, label, icon: Icon }) => (
-                  <Button
-                    key={id}
-                    variant={activeFeature === id ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setActiveFeature(id)}
-                    className={
-                      activeFeature === id
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 text-white"
-                        : "border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700/50"
-                    }
-                  >
-                    <Icon className="w-4 h-4 mr-2" />
-                    {label}
-                  </Button>
-                ))}
+          <div className="sticky bottom-0">
+            {/* Chat Input */}
+            <ChatInput
+              onSendMessage={handleSendMessage}
+              onFileUpload={handleFileUpload}
+              disabled={isTyping}
+            />
+            <div className="border-t border-slate-700/50 bg-slate-900/50 backdrop-blur-sm px-4 py-3">
+              <div className="max-w-4xl mx-auto">
+                <div className="flex gap-2 justify-center">
+                  {featureButtons.map(({ id, label, icon: Icon }) => (
+                    <Button
+                      key={id}
+                      variant={activeFeature === id ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setActiveFeature(id)}
+                      className={
+                        activeFeature === id
+                          ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 text-white"
+                          : "border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700/50"
+                      }
+                    >
+                      <Icon className="w-4 h-4 mr-2" />
+                      {label}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-
-          {/* Chat Input */}
-          <ChatInput
-            onSendMessage={handleSendMessage}
-            onFileUpload={handleFileUpload}
-            disabled={isTyping}
-          />
         </div>
       </div>
     </SidebarProvider>

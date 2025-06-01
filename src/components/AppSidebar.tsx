@@ -80,8 +80,13 @@ const AppSidebar: React.FC = () => {
     navigate(`?${searchParams.toString()}`);
   }
   return (
-    <Sidebar className="border-slate-700/50">
-      <SidebarHeader className="p-6 border-b border-slate-700/50">
+    <Sidebar
+      style={{
+        color: "red",
+      }}
+      className="!bg-black border-slate-700/50"
+    >
+      <SidebarHeader className=" bg-slate-900 p-6 border-b border-slate-700/50">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             RAG Assistant
@@ -97,38 +102,18 @@ const AppSidebar: React.FC = () => {
         </Button>
       </SidebarHeader>
 
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-400">
-            Actions
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {mainActions.map((item) => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton
-                    onClick={item.action}
-                    className="text-slate-300 hover:text-white hover:bg-slate-700/50"
-                  >
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.label}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
+      <SidebarContent className="bg-slate-900">
         <SidebarGroup>
           <SidebarGroupLabel className="text-slate-400">
             Recent Conversations
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="bg-slate-900">
               {conversations?.map((conv, index) => (
                 <SidebarMenuItem key={index}>
                   <SidebarMenuButton
-                    className="text-slate-300 hover:text-white hover:bg-slate-700/50 h-auto p-3"
+                    className="text-slate-300 hover:text-white hover:bg-black
+                     h-auto p-3"
                     onClick={() => {
                       const params = new URLSearchParams(location.search);
 
@@ -162,7 +147,7 @@ const AppSidebar: React.FC = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-slate-700/50">
+      <SidebarFooter className="p-4 border-t border-slate-700/50 bg-black">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton className="text-slate-300 hover:text-white hover:bg-slate-700/50">

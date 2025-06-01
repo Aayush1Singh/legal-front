@@ -95,10 +95,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
               onKeyDown={handleKeyDown}
               placeholder="Ask anything about your documents..."
               disabled={disabled}
-              className="min-h-0 resize-none border-0 bg-transparent text-white placeholder-slate-400 focus:ring-0 focus:ring-offset-0 p-0 text-sm leading-6"
+              className=" resize-none border-0 bg-transparent text-white placeholder-slate-400 focus:ring-0 focus:ring-offset-0 p-0 text-lg leading-6 h-full"
               rows={1}
               style={{
-                minHeight: "24px",
+                minHeight: "32px",
                 maxHeight: "120px",
                 overflow: message.length > 100 ? "auto" : "hidden",
               }}
