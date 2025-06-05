@@ -41,6 +41,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       onSendFile();
     } else if (message.trim() && !disabled) {
       onSendMessage(message.trim());
+
       setMessage("");
     }
 
@@ -59,10 +60,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (file) {
       if (file.type === "application/pdf") {
         onFileUpload?.(file);
-        toast({
-          title: "File uploaded successfully",
-          description: `${file.name} has been uploaded and is ready for analysis.`,
-        });
+        // toast({
+        //   title: "File uploaded successfully",
+        //   description: `${file.name} has been uploaded and is ready for analysis.`,
+        // });
       } else {
         toast({
           title: "Invalid file type",

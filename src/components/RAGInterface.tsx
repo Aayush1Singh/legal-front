@@ -10,6 +10,7 @@ import WelcomeLogo from "./WelcomeLogo";
 import { useLocation, useNavigate } from "react-router-dom";
 import { assistantResponse, getChat, newSession } from "@/services/ChatHandler";
 import { handleFileUploadToDatabase } from "@/services/FileHandler";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   query: string;
@@ -24,6 +25,8 @@ export interface UploadedFile {
 }
 
 const RAGInterface: React.FC = () => {
+  const { toast } = useToast();
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [activeFeature, setActiveFeature] = useState<
@@ -51,7 +54,6 @@ const RAGInterface: React.FC = () => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-
     setIsTyping(true);
     const searchParams = new URLSearchParams(location.search);
     // console.log(query);
@@ -77,15 +79,18 @@ const RAGInterface: React.FC = () => {
       content,
       temp === "" ? params.get("session_id") : temp
     );
-
+    if (response.message == "failed") toast({ title: "failed" });
     setIsTyping(false);
 
     console.log(response);
     setMessages((messages: Message[]) => {
       // Ensure response is a string
       // Create a new array with the last message's response updated
+
       return messages.map((msg, idx) =>
-        idx === messages.length - 1 ? { ...msg, response: response } : msg
+        idx === messages.length - 1
+          ? { ...msg, response: response.response }
+          : msg
       );
     });
     // Simulate AI response based on active feature
@@ -94,7 +99,7 @@ const RAGInterface: React.FC = () => {
     name: string;
     size: string;
   }
-  const handleFileUpload = (file: File) => {
+  const handleFileUpload = async (file: File) => {
     console.log("Uploaded file:", file.name);
     // Add the file to the uploaded files list
     const newFile: UploadedFile = {
@@ -103,9 +108,18 @@ const RAGInterface: React.FC = () => {
       uploadedAt: new Date(),
       file,
     };
-
     setUploadedFiles((prev) => [...prev, newFile]);
+    const session_id = params.get("session_id");
+    const res = await handleFileUploadToDatabase(file, session_id);
+    if (res.message == "failed") toast({ title: "failed" });
+    else {
+      toast({
+        title: "File uploaded To DB",
+        description: `${file.name} has been uploaded and is ready for analysis.`,
+      });
+    }
   };
+
   async function onSendFile() {
     const session_id = params.get("session_id");
     const query: queryFile[] = uploadedFiles.map((file) => {
@@ -117,6 +131,7 @@ const RAGInterface: React.FC = () => {
 
     setUploadedFiles([]);
   }
+
   const handleRemoveFile = (fileName: string) => {
     setUploadedFiles((prev) => prev.filter((file) => file.name !== fileName));
   };
@@ -174,7 +189,7 @@ const RAGInterface: React.FC = () => {
             <div className="flex items-center gap-3">
               <SidebarTrigger className="text-slate-400 hover:text-white hover:bg-black" />
               <h1 className="text-lg font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                RAG Assistant
+                LegalAI Assistant
               </h1>
             </div>
           </header>

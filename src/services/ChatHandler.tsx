@@ -29,10 +29,11 @@ export async function assistantResponse(query, session_id) {
   console.log(response);
   interface Res {
     response: string;
+    message: string;
   }
   const res = response.data as Res;
   console.log(res);
-  return res.response;
+  return res;
 }
 interface conversation {
   session_id: string;

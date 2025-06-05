@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useForm, Resolver } from "react-hook-form";
 import { SignupHandler } from "@/services/LoginHandler";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 type FormValues = {
   fullName: string;
   password: string;
@@ -32,6 +33,7 @@ interface Response {
   message: string;
 }
 const Signup: React.FC = () => {
+  const { toast } = useToast();
   const navigate = useNavigate();
   const {
     register,
@@ -53,10 +55,12 @@ const Signup: React.FC = () => {
       password,
       fullName
     )) as Response;
+
     console.log(response);
     if (response.message === "success") {
+      toast({ title: "success" });
       navigate("/u");
-    }
+    } else toast({ title: "failed" });
   }
 
   // const handleSubmit = (e: React.FormEvent) => {

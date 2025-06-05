@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm, Resolver } from "react-hook-form";
 import { LoginHandler } from "@/services/LoginHandler";
+import { useToast } from "@/hooks/use-toast";
 type FormValues = {
   fullName: string;
   password: string;
@@ -29,6 +30,8 @@ interface Response {
   message: string;
 }
 const Login: React.FC = () => {
+  const { toast } = useToast();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -41,7 +44,10 @@ const Login: React.FC = () => {
     const { email, password } = data;
     const response = (await LoginHandler(email, password)) as Response;
     if (response.message === "success") {
+      toast({ title: "successfully logined" });
       navigate("/u");
+    } else {
+      toast({ title: "failed login" });
     }
     console.log(data);
   }
@@ -52,7 +58,13 @@ const Login: React.FC = () => {
   // };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
+    <div className=" relative min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
+      <div className="absolute bg-white top-0 left-0">
+        <h3>Test Credentials</h3>
+        <p>email: hello@gmail.com</p>
+        <p>passwrod: helloitsme</p>
+      </div>
+
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
