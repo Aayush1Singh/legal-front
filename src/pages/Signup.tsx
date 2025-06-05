@@ -76,7 +76,7 @@ const Signup: React.FC = () => {
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             Create Account
           </h1>
-          <p className="text-slate-400 mt-2">Join RAG Assistant today</p>
+          <p className="text-slate-400 mt-2">Join LegalAI Assistant today</p>
         </div>
 
         {/* Signup Form */}

@@ -210,7 +210,7 @@ const Home: React.FC = () => {
               <Brain className="w-4 h-4 text-white" />
             </div>
             <span className="text-lg font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              RAG Assistant
+              LegalAI Assistant
             </span>
           </div>
           <p className="text-slate-400">

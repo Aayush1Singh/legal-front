@@ -62,7 +62,9 @@ const Login: React.FC = () => {
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             Welcome Back
           </h1>
-          <p className="text-slate-400 mt-2">Sign in to your RAG Assistant</p>
+          <p className="text-slate-400 mt-2">
+            Sign in to your LegalAI Assistant
+          </p>
         </div>
 
         {/* Login Form */}
