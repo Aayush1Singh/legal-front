@@ -39,6 +39,7 @@ const RAGInterface: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+  const location = useLocation();
   const params = new URLSearchParams(location.search);
 
   const navigate = useNavigate();
@@ -133,8 +134,8 @@ const RAGInterface: React.FC = () => {
     { id: "analyze" as const, label: "Analyze Document", icon: FileText },
     { id: "resolve" as const, label: "Resolve Query", icon: Gavel },
   ];
-  const location = useLocation();
-  const query = new URLSearchParams(useLocation().search);
+  // const location = useLocation();
+  const query = new URLSearchParams(location.search);
   interface Recipi {
     response: Message[];
   }
