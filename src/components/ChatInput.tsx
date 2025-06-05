@@ -1,26 +1,45 @@
 import React, { useState, useRef } from "react";
-import { Send, Paperclip, Mic } from "lucide-react";
+import { Send, Paperclip, Mic, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
+import { UploadedFile } from "./RAGInterface";
+
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   onFileUpload?: (file: File) => void;
   disabled?: boolean;
+  uploadedFiles?: UploadedFile[];
+  handleRemoveFile?: (fileName: string) => void;
+  activeFeature?: "similar" | "analyze" | "resolve";
+  onSendFile?: () => Promise<void>;
 }
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+};
 
 const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   onFileUpload,
   disabled,
+  uploadedFiles,
+  handleRemoveFile,
+  activeFeature,
+  onSendFile,
 }) => {
   const [message, setMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim() && !disabled) {
+    if (activeFeature == "analyze") {
+      onSendFile();
+    } else if (message.trim() && !disabled) {
       onSendMessage(message.trim());
       setMessage("");
     }
@@ -81,14 +100,52 @@ const ChatInput: React.FC<ChatInputProps> = ({
             variant="ghost"
             size="sm"
             onClick={triggerFileUpload}
-            disabled={disabled}
-            className="text-slate-400 hover:text-white p-2 flex-shrink-0"
+            disabled={uploadedFiles?.length > 0 || disabled}
+            className="text-slate-400 hover:text-white p-2 flex-shrink-0 hover:bg-black"
           >
             <Paperclip className="w-5 h-5" />
           </Button>
 
           {/* Text Input */}
           <div className="flex-1 min-w-0">
+            <div className="mb-1">
+              {uploadedFiles.length > 0 && (
+                <div className=" border-slate-700/50 bg-slate-900/30 backdrop-blur-sm p-2 pt-1">
+                  <div className="max-w-4xl mx-auto">
+                    <h3 className="text-sm font-medium text-slate-300 mb-3">
+                      Uploaded Documents
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {uploadedFiles.map((file, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 backdrop-blur-sm"
+                        >
+                          <FileText className="w-4 h-4 text-red-400" />
+                          <div className="flex flex-col">
+                            <span className="text-sm text-slate-200 font-medium truncate max-w-[200px]">
+                              {file.name}
+                            </span>
+                            <span className="text-xs text-slate-400">
+                              {formatFileSize(file.size)}
+                            </span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveFile(file.name)}
+                            className="text-slate-400 hover:text-red-400 h-6 w-6 p-0"
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <Textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -111,15 +168,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
             variant="ghost"
             size="sm"
             disabled={disabled}
-            className="text-slate-400 hover:text-white p-2 flex-shrink-0"
+            className="text-slate-400 hover:text-white p-2 flex-shrink-0 hover:bg-black"
           >
             <Mic className="w-5 h-5" />
           </Button>
 
-          {/* Send Button */}
           <Button
             type="submit"
-            disabled={!message.trim() || disabled}
+            disabled={
+              (activeFeature != "analyze" && !message.trim()) ||
+              disabled ||
+              (activeFeature == "analyze" && uploadedFiles?.length == 0)
+            }
             size="sm"
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 p-2 flex-shrink-0"
           >
@@ -127,7 +187,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
           </Button>
         </div>
 
-        {/* Helper Text */}
         <p className="text-xs text-slate-500 mt-2 text-center">
           Press Enter to send, Shift + Enter for new line • Click 📎 to upload
           PDF files

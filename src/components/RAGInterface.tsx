@@ -9,16 +9,18 @@ import ChatInput from "./ChatInput";
 import WelcomeLogo from "./WelcomeLogo";
 import { useLocation, useNavigate } from "react-router-dom";
 import { assistantResponse, getChat, newSession } from "@/services/ChatHandler";
+import { handleFileUploadToDatabase } from "@/services/FileHandler";
 
 interface Message {
   query: string;
   response?: string;
 }
 
-interface UploadedFile {
+export interface UploadedFile {
   name: string;
   size: number;
   uploadedAt: Date;
+  file: File;
 }
 
 const RAGInterface: React.FC = () => {
@@ -37,6 +39,7 @@ const RAGInterface: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+  const params = new URLSearchParams(location.search);
 
   const navigate = useNavigate();
   const [flag, setFlag] = useState(false);
@@ -49,7 +52,6 @@ const RAGInterface: React.FC = () => {
     setMessages((prev) => [...prev, userMessage]);
 
     setIsTyping(true);
-    const params = new URLSearchParams(location.search);
     const searchParams = new URLSearchParams(location.search);
     // console.log(query);
     interface Response {
@@ -87,30 +89,43 @@ const RAGInterface: React.FC = () => {
     });
     // Simulate AI response based on active feature
   };
-
+  interface queryFile {
+    name: string;
+    size: string;
+  }
   const handleFileUpload = (file: File) => {
     console.log("Uploaded file:", file.name);
-    
     // Add the file to the uploaded files list
     const newFile: UploadedFile = {
       name: file.name,
       size: file.size,
-      uploadedAt: new Date()
+      uploadedAt: new Date(),
+      file,
     };
-    
-    setUploadedFiles(prev => [...prev, newFile]);
-  };
 
+    setUploadedFiles((prev) => [...prev, newFile]);
+  };
+  async function onSendFile() {
+    const session_id = params.get("session_id");
+    const query: queryFile[] = uploadedFiles.map((file) => {
+      handleFileUploadToDatabase(file.file, session_id);
+      return { name: file.name, size: String(file.size) } as queryFile;
+    });
+
+    console.log(query);
+
+    setUploadedFiles([]);
+  }
   const handleRemoveFile = (fileName: string) => {
-    setUploadedFiles(prev => prev.filter(file => file.name !== fileName));
+    setUploadedFiles((prev) => prev.filter((file) => file.name !== fileName));
   };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const featureButtons = [
@@ -164,10 +179,12 @@ const RAGInterface: React.FC = () => {
           </header>
 
           {/* Uploaded Files Display */}
-          {uploadedFiles.length > 0 && (
+          {/* {uploadedFiles.length > 0 && (
             <div className="border-b border-slate-700/50 bg-slate-900/30 backdrop-blur-sm p-4">
               <div className="max-w-4xl mx-auto">
-                <h3 className="text-sm font-medium text-slate-300 mb-3">Uploaded Documents</h3>
+                <h3 className="text-sm font-medium text-slate-300 mb-3">
+                  Uploaded Documents
+                </h3>
                 <div className="flex flex-wrap gap-2">
                   {uploadedFiles.map((file, index) => (
                     <div
@@ -196,7 +213,7 @@ const RAGInterface: React.FC = () => {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Chat Area */}
           <div className="flex-1 overflow-y-auto">
@@ -236,6 +253,9 @@ const RAGInterface: React.FC = () => {
               onSendMessage={handleSendMessage}
               onFileUpload={handleFileUpload}
               disabled={isTyping}
+              uploadedFiles={uploadedFiles}
+              handleRemoveFile={handleRemoveFile}
+              activeFeature={activeFeature}
             />
             <div className="border-t border-slate-700/50 bg-slate-900/50 backdrop-blur-sm px-4 py-3">
               <div className="max-w-4xl mx-auto">

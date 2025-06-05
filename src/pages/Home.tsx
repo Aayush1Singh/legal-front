@@ -24,8 +24,7 @@ const Home: React.FC = () => {
     {
       icon: Search,
       title: "Intelligent Search",
-      description:
-        "Find exactly what you need across your entire knowledge base instantly",
+      description: "Finds Similar Cases on the go",
     },
     {
       icon: FileText,
@@ -51,7 +50,7 @@ const Home: React.FC = () => {
               <Brain className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              RAG Assistant
+              LegalAI
             </span>
           </div>
           <div className="flex items-center space-x-4">
@@ -82,7 +81,7 @@ const Home: React.FC = () => {
             <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-6">
               Your Intelligent
               <br />
-              Document Assistant
+              Legal Assistant
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed mb-8">
               Transform how you interact with documents. Upload, analyze, and
@@ -188,8 +187,8 @@ const Home: React.FC = () => {
               Ready to Transform Your Workflow?
             </h2>
             <p className="text-xl text-slate-300 mb-8">
-              Join thousands of users who are already using RAG Assistant to
-              unlock insights from their documents.
+              Join thousands of users who are already using this Legal Assistant
+              to unlock insights from their documents.
             </p>
             <Button
               size="lg"
@@ -215,7 +214,7 @@ const Home: React.FC = () => {
             </span>
           </div>
           <p className="text-slate-400">
-            © 2024 RAG Assistant. All rights reserved.
+            © 2025 LegalAI Assistant. All rights reserved.
           </p>
         </div>
       </footer>
