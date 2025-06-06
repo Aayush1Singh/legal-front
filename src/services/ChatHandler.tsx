@@ -1,3 +1,4 @@
+
 import React from "react";
 import axios from "axios";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
@@ -68,11 +69,14 @@ export async function similarSearch(query, session_id) {
 }
 export async function analyzeFile(session_id) {
   interface AnalyzedClauses {
+    identified_parties: string;
     bias_flags: string[];
     ambiguities: string[];
     potential_loopholes: string[];
     legal_conflicts: string[];
+    improvements?: string[];
     bias_score: number;
+    clause: string;
   }
   interface res {
     response: AnalyzedClauses[];
