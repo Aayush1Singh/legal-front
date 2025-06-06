@@ -24,6 +24,7 @@ interface Message {
   query: string;
   response?: string;
   isUpload?: boolean;
+  analysedDoc?: boolean;
 }
 
 export interface UploadedFile {
@@ -43,7 +44,9 @@ const RAGInterface: React.FC = () => {
   >("resolve");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [analysisResults, setAnalysisResults] = useState<AnalysisClause[] | null>(null);
+  const [analysisResults, setAnalysisResults] = useState<
+    AnalysisClause[] | null
+  >(null);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
 
   const scrollToBottom = () => {
@@ -58,7 +61,7 @@ const RAGInterface: React.FC = () => {
 
   const navigate = useNavigate();
   const [flag, setFlag] = useState(false);
-  
+
   const handleSendMessage = async (session_id, content: string) => {
     console.log("content", content);
     const userMessage: Message = {
@@ -110,12 +113,12 @@ const RAGInterface: React.FC = () => {
     });
     // Simulate AI response based on active feature
   };
-  
+
   interface queryFile {
     name: string;
     size: string;
   }
-  
+
   const handleFileUpload = async (file: File) => {
     console.log("Uploaded file:", file.name);
     // Add the file to the uploaded files list
@@ -180,9 +183,7 @@ const RAGInterface: React.FC = () => {
     { id: "analyze" as const, label: "Analyze Document", icon: FileText },
     { id: "resolve" as const, label: "Resolve Query", icon: Gavel },
   ];
-  
-  
-  
+
   useEffect(() => {
     if (flag) {
       setFlag(false);
@@ -204,12 +205,12 @@ const RAGInterface: React.FC = () => {
       search: searchParam,
     });
   }, [location.search]);
-  
+
   useEffect(() => {
     if (activeFeature == "similar") setUploadedFiles([]);
     if (activeFeature == "analyze") return;
   }, [activeFeature]);
-  
+
   const onSearchSimilar = async function (session_id, content: string) {
     const userMessage: Message = {
       query: content,
@@ -237,7 +238,7 @@ const RAGInterface: React.FC = () => {
       );
     });
   };
-  
+
   const query = new URLSearchParams(location.search);
   interface Recipi {
     response: Message[];
@@ -253,7 +254,7 @@ const RAGInterface: React.FC = () => {
     setIsTyping(true);
     const res = await analyzeFile(session_id);
     setIsTyping(false);
-    
+
     // Handle the analysis results
     const clauses_array = res.response;
     setAnalysisResults(clauses_array);
@@ -261,18 +262,21 @@ const RAGInterface: React.FC = () => {
 
     // Add response message with a summary
     const totalClauses = clauses_array.length;
-    const highBiasClauses = clauses_array.filter(clause => clause.bias_score >= 0.6).length;
-    
+    const highBiasClauses = clauses_array.filter(
+      (clause) => clause.bias_score >= 0.6
+    ).length;
+
     setMessages((prev) => {
       const lastMessage = prev[prev.length - 1];
-      return [...prev.slice(0, -1), {
-        ...lastMessage,
-        response: `Analysis complete. Found ${totalClauses} clauses, with ${highBiasClauses} clauses showing high bias scores. See the detailed analysis report for more information.`
-      }];
+      return [
+        ...prev.slice(0, -1),
+        {
+          ...lastMessage,
+          response: `Analysis complete. Found ${totalClauses} clauses, with ${highBiasClauses} clauses showing high bias scores. See the detailed analysis report for more information.`,
+        },
+      ];
     });
   }
-  
-  
 
   return (
     <SidebarProvider>
@@ -347,6 +351,7 @@ const RAGInterface: React.FC = () => {
                           key={`response_${index}`}
                           message={message.response}
                           type="assistant"
+                          analysedDoc={message.analysedDoc}
                         ></ChatMessage>
                       )}
                     </>
@@ -398,8 +403,8 @@ const RAGInterface: React.FC = () => {
 
         {/* Analysis Modal */}
         {showAnalysisModal && analysisResults && (
-          <AnalysisDisplay 
-            analysisResults={analysisResults} 
+          <AnalysisDisplay
+            analysisResults={analysisResults}
             onClose={() => setShowAnalysisModal(false)}
           />
         )}

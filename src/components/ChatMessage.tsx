@@ -7,13 +7,16 @@ interface ChatMessageProps {
   message: string;
   type: string;
   fileUpload?: boolean;
+  analysedDoc?: boolean;
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({
   message,
   type,
   fileUpload = false,
+  analysedDoc = false,
 }) => {
+  function fetchAndDisplay() {}
   const isUser = type === "user";
 
   return (
@@ -73,6 +76,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {message}
               </ReactMarkdown>
+              {analysedDoc && (
+                <Button onClick={() => fetchAndDisplay()}>See Analysis</Button>
+              )}
             </p>
           </div>
 
