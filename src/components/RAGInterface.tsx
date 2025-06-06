@@ -18,6 +18,7 @@ import {
 } from "@/services/ChatHandler";
 import { handleFileUploadToDatabase } from "@/services/FileHandler";
 import { useToast } from "@/hooks/use-toast";
+import AnalysisDisplay, { AnalysisClause } from "./AnalysisDisplay";
 
 interface Message {
   query: string;
@@ -42,6 +43,8 @@ const RAGInterface: React.FC = () => {
   >("resolve");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [analysisResults, setAnalysisResults] = useState<AnalysisClause[] | null>(null);
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -55,6 +58,7 @@ const RAGInterface: React.FC = () => {
 
   const navigate = useNavigate();
   const [flag, setFlag] = useState(false);
+  
   const handleSendMessage = async (session_id, content: string) => {
     console.log("content", content);
     const userMessage: Message = {
@@ -106,10 +110,12 @@ const RAGInterface: React.FC = () => {
     });
     // Simulate AI response based on active feature
   };
+  
   interface queryFile {
     name: string;
     size: string;
   }
+  
   const handleFileUpload = async (file: File) => {
     console.log("Uploaded file:", file.name);
     // Add the file to the uploaded files list
@@ -174,11 +180,9 @@ const RAGInterface: React.FC = () => {
     { id: "analyze" as const, label: "Analyze Document", icon: FileText },
     { id: "resolve" as const, label: "Resolve Query", icon: Gavel },
   ];
-  // const location = useLocation();
-  const query = new URLSearchParams(location.search);
-  interface Recipi {
-    response: Message[];
-  }
+  
+  
+  
   useEffect(() => {
     if (flag) {
       setFlag(false);
@@ -199,30 +203,13 @@ const RAGInterface: React.FC = () => {
     console.log("Query params changed:", {
       search: searchParam,
     });
-
-    // Do something with the query param changes...
-  }, [location.search]); // Reacts to any query string change
-  // useEffect(() => {
-  //   const searchParams = new URLSearchParams(location.search);
-  //   // console.log(query);
-  //   interface Response {
-  //     session_id: string;
-  //   }
-  //   let temp = "";
-  //   async function createSession() {
-  // const response = (await newSession()) as Response;
-  //     console.log(response);
-  //     searchParams.set("session_id", response.session_id);
-  //     temp = response.session_id;
-  //     setFlag(true);
-  //     navigate(`?${searchParams.toString()}`);
-  //   }
-  //   createSession();
-  // }, []);
+  }, [location.search]);
+  
   useEffect(() => {
     if (activeFeature == "similar") setUploadedFiles([]);
     if (activeFeature == "analyze") return;
   }, [activeFeature]);
+  
   const onSearchSimilar = async function (session_id, content: string) {
     const userMessage: Message = {
       query: content,
@@ -250,10 +237,13 @@ const RAGInterface: React.FC = () => {
       );
     });
   };
+  
+  const query = new URLSearchParams(location.search);
+  interface Recipi {
+    response: Message[];
+  }
 
-  useEffect(() => {}, [activeFeature]);
   async function onAnalyzeFile(session_id) {
-    // const session_id = params.get("session_id");
     const userMessage: Message = {
       query: "Used analyzed document",
       isUpload: true,
@@ -263,10 +253,27 @@ const RAGInterface: React.FC = () => {
     setIsTyping(true);
     const res = await analyzeFile(session_id);
     setIsTyping(false);
+    
+    // Handle the analysis results
     const clauses_array = res.response;
+    setAnalysisResults(clauses_array);
+    setShowAnalysisModal(true);
 
-    console.log(clauses_array);
+    // Add response message with a summary
+    const totalClauses = clauses_array.length;
+    const highBiasClauses = clauses_array.filter(clause => clause.bias_score >= 0.6).length;
+    
+    setMessages((prev) => {
+      const lastMessage = prev[prev.length - 1];
+      return [...prev.slice(0, -1), {
+        ...lastMessage,
+        response: `Analysis complete. Found ${totalClauses} clauses, with ${highBiasClauses} clauses showing high bias scores. See the detailed analysis report for more information.`
+      }];
+    });
   }
+  
+  
+
   return (
     <SidebarProvider>
       <div className="!bg-black min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex w-full">
@@ -284,7 +291,7 @@ const RAGInterface: React.FC = () => {
           </header>
 
           {/* Uploaded Files Display */}
-          {/* {uploadedFiles.length > 0 && (
+          {uploadedFiles.length > 0 && (
             <div className="border-b border-slate-700/50 bg-slate-900/30 backdrop-blur-sm p-4">
               <div className="max-w-4xl mx-auto">
                 <h3 className="text-sm font-medium text-slate-300 mb-3">
@@ -318,7 +325,7 @@ const RAGInterface: React.FC = () => {
                 </div>
               </div>
             </div>
-          )} */}
+          )}
 
           {/* Chat Area */}
           <div className="flex-1 overflow-y-auto">
@@ -342,7 +349,6 @@ const RAGInterface: React.FC = () => {
                           type="assistant"
                         ></ChatMessage>
                       )}
-                      {/* <ChatMessage key={message.id+1} message={message}> */}
                     </>
                   ))}
                   {isTyping && <TypingIndicator />}
@@ -389,6 +395,14 @@ const RAGInterface: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Analysis Modal */}
+        {showAnalysisModal && analysisResults && (
+          <AnalysisDisplay 
+            analysisResults={analysisResults} 
+            onClose={() => setShowAnalysisModal(false)}
+          />
+        )}
       </div>
     </SidebarProvider>
   );
