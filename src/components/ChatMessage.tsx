@@ -8,6 +8,7 @@ interface ChatMessageProps {
   type: string;
   fileUpload?: boolean;
   analysedDoc?: boolean;
+  onReSeeAnalysis?: () => Promise<void>;
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({
@@ -15,6 +16,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   type,
   fileUpload = false,
   analysedDoc = false,
+  onReSeeAnalysis,
 }) => {
   function fetchAndDisplay() {}
   const isUser = type === "user";
@@ -77,7 +79,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                 {message}
               </ReactMarkdown>
               {analysedDoc && (
-                <Button onClick={() => fetchAndDisplay()}>See Analysis</Button>
+                <Button onClick={() => onReSeeAnalysis()}>See Analysis</Button>
               )}
             </p>
           </div>

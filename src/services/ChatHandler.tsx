@@ -1,6 +1,6 @@
-
 import React from "react";
 import axios from "axios";
+import { AnalysisClause } from "@/components/AnalysisDisplay";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 export async function newSession() {
   const response = await axios.post(
@@ -86,6 +86,20 @@ export async function analyzeFile(session_id) {
     withCredentials: true,
   });
 
+  const data = response.data as res;
+  return data;
+}
+export async function loadAnalysis(session_id) {
+  const response = await axios.get(
+    `${apiUrl}/session/load_analysis/${session_id}`,
+    {
+      withCredentials: true,
+    }
+  );
+  interface res {
+    response: AnalysisClause[];
+    message: string;
+  }
   const data = response.data as res;
   return data;
 }

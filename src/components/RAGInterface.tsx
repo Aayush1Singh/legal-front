@@ -13,6 +13,7 @@ import {
   analyzeFile,
   assistantResponse,
   getChat,
+  loadAnalysis,
   newSession,
   similarSearch,
 } from "@/services/ChatHandler";
@@ -39,6 +40,7 @@ const RAGInterface: React.FC = () => {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [isUploading, setUploading] = useState(false);
   const [activeFeature, setActiveFeature] = useState<
     "similar" | "analyze" | "resolve"
   >("resolve");
@@ -120,6 +122,7 @@ const RAGInterface: React.FC = () => {
   }
 
   const handleFileUpload = async (file: File) => {
+    setUploading(true);
     console.log("Uploaded file:", file.name);
     // Add the file to the uploaded files list
     const newFile: UploadedFile = {
@@ -144,7 +147,9 @@ const RAGInterface: React.FC = () => {
       }
       await createSession();
     }
+
     const res = await handleFileUploadToDatabase(file, session_id);
+    setUploading(false);
     if (res.message == "failed") toast({ title: "failed" });
     else {
       toast({
@@ -249,7 +254,9 @@ const RAGInterface: React.FC = () => {
       query: "Used analyzed document",
       isUpload: true,
     };
+
     setMessages((prev) => [...prev, userMessage]);
+    setUploadedFiles([]);
 
     setIsTyping(true);
     const res = await analyzeFile(session_id);
@@ -273,9 +280,16 @@ const RAGInterface: React.FC = () => {
         {
           ...lastMessage,
           response: `Analysis complete. Found ${totalClauses} clauses, with ${highBiasClauses} clauses showing high bias scores. See the detailed analysis report for more information.`,
+          analysedDoc: true,
         },
       ];
     });
+  }
+  async function reSeeAnalysis() {
+    const session_id = params.get("session_id");
+    const data = await loadAnalysis(session_id);
+    setAnalysisResults(data.response);
+    setShowAnalysisModal(true);
   }
 
   return (
@@ -295,7 +309,8 @@ const RAGInterface: React.FC = () => {
           </header>
 
           {/* Uploaded Files Display */}
-          {uploadedFiles.length > 0 && (
+
+          {/* {uploadedFiles.length > 0 && (
             <div className="border-b border-slate-700/50 bg-slate-900/30 backdrop-blur-sm p-4">
               <div className="max-w-4xl mx-auto">
                 <h3 className="text-sm font-medium text-slate-300 mb-3">
@@ -330,7 +345,7 @@ const RAGInterface: React.FC = () => {
               </div>
             </div>
           )}
-
+ */}
           {/* Chat Area */}
           <div className="flex-1 overflow-y-auto">
             <div className="max-w-4xl mx-auto p-6">
@@ -352,6 +367,7 @@ const RAGInterface: React.FC = () => {
                           message={message.response}
                           type="assistant"
                           analysedDoc={message.analysedDoc}
+                          onReSeeAnalysis={reSeeAnalysis}
                         ></ChatMessage>
                       )}
                     </>
@@ -369,7 +385,7 @@ const RAGInterface: React.FC = () => {
             <ChatInput
               onSendMessage={handleSendMessage}
               onFileUpload={handleFileUpload}
-              disabled={isTyping}
+              disabled={isTyping || isUploading}
               uploadedFiles={uploadedFiles}
               handleRemoveFile={handleRemoveFile}
               activeFeature={activeFeature}
