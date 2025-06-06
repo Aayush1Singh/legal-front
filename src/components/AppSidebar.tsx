@@ -89,7 +89,7 @@ const AppSidebar: React.FC = () => {
       <SidebarHeader className=" bg-slate-900 p-6 border-b border-slate-700/50">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            RAG Assistant
+            LegalAI Assistant
           </h1>
         </div>
 

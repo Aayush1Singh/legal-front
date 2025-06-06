@@ -1,19 +1,22 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Send, Paperclip, Mic, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { UploadedFile } from "./RAGInterface";
+import { useLocation, useNavigate } from "react-router-dom";
+import { newSession } from "@/services/ChatHandler";
 
 interface ChatInputProps {
-  onSendMessage: (message: string) => void;
+  onSendMessage: (session_id: string, message: string) => void;
   onFileUpload?: (file: File) => void;
   disabled?: boolean;
   uploadedFiles?: UploadedFile[];
   handleRemoveFile?: (fileName: string) => void;
   activeFeature?: "similar" | "analyze" | "resolve";
-  onSendFile?: () => Promise<void>;
+  onSendFile?: (session_id: string) => Promise<void>;
+  onSearchSimilar?: (session_id: string, message: string) => void;
 }
 const formatFileSize = (bytes: number) => {
   if (bytes === 0) return "0 Bytes";
@@ -31,17 +34,39 @@ const ChatInput: React.FC<ChatInputProps> = ({
   handleRemoveFile,
   activeFeature,
   onSendFile,
+  onSearchSimilar,
 }) => {
   const [message, setMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const handleSubmit = (e: React.FormEvent) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (activeFeature == "analyze") {
-      onSendFile();
-    } else if (message.trim() && !disabled) {
-      onSendMessage(message.trim());
+    const params = new URLSearchParams(location.search);
+    let session_id = params.get("session_id");
+    if (session_id == null) {
+      console.log("jojojoijo", session_id, params, location);
+      async function createSession() {
+        interface Response {
+          session_id: string;
+        }
+        const response = (await newSession()) as Response;
+        console.log(response);
+        params.set("session_id", response.session_id);
+        navigate(`?${params.toString()}`);
+        session_id = response.session_id;
+      }
+      await createSession();
+    }
 
+    if (activeFeature == "analyze") {
+      onSendFile(session_id);
+    } else if (activeFeature == "similar") {
+      onSearchSimilar(session_id, message.trim());
+      setMessage("");
+    } else if (message.trim() && !disabled) {
+      onSendMessage(session_id, message.trim());
       setMessage("");
     }
 
@@ -81,7 +106,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const triggerFileUpload = () => {
     fileInputRef.current?.click();
   };
-
+  useEffect(() => {
+    if (activeFeature == "analyze") setMessage("");
+  }, [activeFeature]);
   return (
     <div className="border-t border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-4">
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
@@ -101,7 +128,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
             variant="ghost"
             size="sm"
             onClick={triggerFileUpload}
-            disabled={uploadedFiles?.length > 0 || disabled}
+            disabled={
+              activeFeature == "similar" ||
+              uploadedFiles?.length > 0 ||
+              disabled
+            }
             className="text-slate-400 hover:text-white p-2 flex-shrink-0 hover:bg-black"
           >
             <Paperclip className="w-5 h-5" />
@@ -152,7 +183,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask anything about your documents..."
-              disabled={disabled}
+              disabled={activeFeature == "analyze" || disabled}
               className=" resize-none border-0 bg-transparent text-white placeholder-slate-400 focus:ring-0 focus:ring-offset-0 p-0 text-lg leading-6 h-full"
               rows={1}
               style={{

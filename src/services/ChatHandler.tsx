@@ -18,11 +18,12 @@ export async function getChat(session_id) {
   );
   return response.data;
 }
-export async function assistantResponse(query, session_id) {
+export async function assistantResponse(query, session_id, isUpload: boolean) {
   console.log(session_id);
   const response = await axios.get(`${apiUrl}/session/query/${session_id}`, {
     params: {
       query: query,
+      isUpload: isUpload,
     },
     withCredentials: true,
   });
@@ -51,4 +52,36 @@ export async function prevChats() {
   const res = response.data as Resi;
   console.log(res);
   return res.response;
+}
+export async function similarSearch(query, session_id) {
+  const response = await axios.get(
+    `${apiUrl}/session/get_similar/${session_id}`,
+    {
+      params: {
+        query: query,
+      },
+      withCredentials: true,
+    }
+  );
+
+  return response.data;
+}
+export async function analyzeFile(session_id) {
+  interface AnalyzedClauses {
+    bias_flags: string[];
+    ambiguities: string[];
+    potential_loopholes: string[];
+    legal_conflicts: string[];
+    bias_score: number;
+  }
+  interface res {
+    response: AnalyzedClauses[];
+    message: string;
+  }
+  const response = await axios.get(`${apiUrl}/session/analyze/${session_id}`, {
+    withCredentials: true,
+  });
+
+  const data = response.data as res;
+  return data;
 }

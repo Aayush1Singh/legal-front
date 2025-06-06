@@ -1,13 +1,19 @@
 import React from "react";
-import { User, Bot, Copy, ThumbsUp, ThumbsDown } from "lucide-react";
+import { User, Bot, Copy, ThumbsUp, ThumbsDown, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 interface ChatMessageProps {
   message: string;
   type: string;
+  fileUpload?: boolean;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, type }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({
+  message,
+  type,
+  fileUpload = false,
+}) => {
   const isUser = type === "user";
 
   return (
@@ -49,12 +55,24 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, type }) => {
         `}
         >
           <div className="prose prose-sm max-w-none">
+            {fileUpload && (
+              <div className="flex items-center gap-2 bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 backdrop-blur-sm">
+                <FileText className="w-4 h-4 text-red-400" />
+                <div className="flex flex-col">
+                  <span className="text-sm text-slate-200 font-medium truncate max-w-[200px]">
+                    {"File"}
+                  </span>
+                </div>
+              </div>
+            )}
             <p
               className={`${
                 isUser ? "text-white" : "text-slate-100"
               } leading-relaxed`}
             >
-              <ReactMarkdown>{message}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {message}
+              </ReactMarkdown>
             </p>
           </div>
 

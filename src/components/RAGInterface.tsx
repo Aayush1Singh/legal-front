@@ -8,13 +8,21 @@ import TypingIndicator from "./TypingIndicator";
 import ChatInput from "./ChatInput";
 import WelcomeLogo from "./WelcomeLogo";
 import { useLocation, useNavigate } from "react-router-dom";
-import { assistantResponse, getChat, newSession } from "@/services/ChatHandler";
+import remarkGfm from "remark-gfm";
+import {
+  analyzeFile,
+  assistantResponse,
+  getChat,
+  newSession,
+  similarSearch,
+} from "@/services/ChatHandler";
 import { handleFileUploadToDatabase } from "@/services/FileHandler";
 import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   query: string;
   response?: string;
+  isUpload?: boolean;
 }
 
 export interface UploadedFile {
@@ -47,41 +55,44 @@ const RAGInterface: React.FC = () => {
 
   const navigate = useNavigate();
   const [flag, setFlag] = useState(false);
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = async (session_id, content: string) => {
     console.log("content", content);
     const userMessage: Message = {
       query: content,
+      isUpload: uploadedFiles.length > 0,
     };
-
     setMessages((prev) => [...prev, userMessage]);
+    setUploadedFiles([]);
     setIsTyping(true);
     const searchParams = new URLSearchParams(location.search);
     // console.log(query);
     interface Response {
       session_id: string;
     }
-    let temp = "";
-    async function createSession() {
-      const response = (await newSession()) as Response;
-      console.log(response);
-      searchParams.set("session_id", response.session_id);
-      temp = response.session_id;
-      setFlag(true);
-      navigate(`?${searchParams.toString()}`);
-    }
+    // let temp = "";
 
-    if (params.get("session_id") == null) {
-      await createSession();
-      setMessages([{ query: content }]);
-    }
+    // async function createSession() {
+    //   const response = (await newSession()) as Response;
+    //   console.log(response);
+    //   searchParams.set("session_id", response.session_id);
+    //   temp = response.session_id;
+    //   setFlag(true);
+    //   navigate(`?${searchParams.toString()}`);
+    // }
+
+    // if (params.get("session_id") == null) {
+    //   await createSession();
+    //   setMessages([{ query: content }]);
+    // }
     console.log(params);
+
     const response = await assistantResponse(
       content,
-      temp === "" ? params.get("session_id") : temp
+      session_id,
+      uploadedFiles.length > 0
     );
     if (response.message == "failed") toast({ title: "failed" });
     setIsTyping(false);
-
     console.log(response);
     setMessages((messages: Message[]) => {
       // Ensure response is a string
@@ -109,7 +120,21 @@ const RAGInterface: React.FC = () => {
       file,
     };
     setUploadedFiles((prev) => [...prev, newFile]);
-    const session_id = params.get("session_id");
+    let session_id = params.get("session_id");
+    if (session_id == null) {
+      console.log("jojojoijo", session_id, params, location);
+      async function createSession() {
+        interface Response {
+          session_id: string;
+        }
+        const response = (await newSession()) as Response;
+        console.log(response);
+        params.set("session_id", response.session_id);
+        navigate(`?${params.toString()}`);
+        session_id = response.session_id;
+      }
+      await createSession();
+    }
     const res = await handleFileUploadToDatabase(file, session_id);
     if (res.message == "failed") toast({ title: "failed" });
     else {
@@ -177,7 +202,71 @@ const RAGInterface: React.FC = () => {
 
     // Do something with the query param changes...
   }, [location.search]); // Reacts to any query string change
+  // useEffect(() => {
+  //   const searchParams = new URLSearchParams(location.search);
+  //   // console.log(query);
+  //   interface Response {
+  //     session_id: string;
+  //   }
+  //   let temp = "";
+  //   async function createSession() {
+  // const response = (await newSession()) as Response;
+  //     console.log(response);
+  //     searchParams.set("session_id", response.session_id);
+  //     temp = response.session_id;
+  //     setFlag(true);
+  //     navigate(`?${searchParams.toString()}`);
+  //   }
+  //   createSession();
+  // }, []);
+  useEffect(() => {
+    if (activeFeature == "similar") setUploadedFiles([]);
+    if (activeFeature == "analyze") return;
+  }, [activeFeature]);
+  const onSearchSimilar = async function (session_id, content: string) {
+    const userMessage: Message = {
+      query: content,
+    };
+    interface Res {
+      response: string;
+      message: string;
+    }
+    setMessages((prev) => [...prev, userMessage]);
+    // const session_id = params.get("session_id");
+    setIsTyping(true);
+    const response = (await similarSearch(content, session_id)) as Res;
+    setIsTyping(false);
 
+    console.log(response);
+
+    setMessages((messages: Message[]) => {
+      // Ensure response is a string
+      // Create a new array with the last message's response updated
+
+      return messages.map((msg, idx) =>
+        idx === messages.length - 1
+          ? { ...msg, response: response.response }
+          : msg
+      );
+    });
+  };
+
+  useEffect(() => {}, [activeFeature]);
+  async function onAnalyzeFile(session_id) {
+    // const session_id = params.get("session_id");
+    const userMessage: Message = {
+      query: "Used analyzed document",
+      isUpload: true,
+    };
+    setMessages((prev) => [...prev, userMessage]);
+
+    setIsTyping(true);
+    const res = await analyzeFile(session_id);
+    setIsTyping(false);
+    const clauses_array = res.response;
+
+    console.log(clauses_array);
+  }
   return (
     <SidebarProvider>
       <div className="!bg-black min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex w-full">
@@ -244,6 +333,7 @@ const RAGInterface: React.FC = () => {
                         key={index}
                         message={message.query}
                         type={"user"}
+                        fileUpload={message.isUpload}
                       />
                       {message?.response && (
                         <ChatMessage
@@ -272,6 +362,8 @@ const RAGInterface: React.FC = () => {
               uploadedFiles={uploadedFiles}
               handleRemoveFile={handleRemoveFile}
               activeFeature={activeFeature}
+              onSearchSimilar={onSearchSimilar}
+              onSendFile={onAnalyzeFile}
             />
             <div className="border-t border-slate-700/50 bg-slate-900/50 backdrop-blur-sm px-4 py-3">
               <div className="max-w-4xl mx-auto">
