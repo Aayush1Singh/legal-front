@@ -110,9 +110,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (activeFeature == "analyze") setMessage("");
   }, [activeFeature]);
   return (
-    <div className="border-t border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-4">
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
-        <div className="relative flex items-end gap-2 p-3 bg-slate-800/50 border border-slate-700/50 rounded-2xl backdrop-blur-sm">
+    <div className="border-t border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-3 sm:p-4">
+      <form onSubmit={handleSubmit} className="max-w-full sm:max-w-4xl mx-auto">
+        <div className="relative flex items-end gap-2 p-2 sm:p-3 bg-slate-800/50 border border-slate-700/50 rounded-xl sm:rounded-2xl backdrop-blur-sm">
           {/* Hidden file input */}
           <input
             ref={fileInputRef}
@@ -133,50 +133,47 @@ const ChatInput: React.FC<ChatInputProps> = ({
               uploadedFiles?.length > 0 ||
               disabled
             }
-            className="text-slate-400 hover:text-white p-2 flex-shrink-0 hover:bg-black"
+            className="text-slate-400 hover:text-white p-1.5 sm:p-2 flex-shrink-0 hover:bg-black h-8 w-8 sm:h-9 sm:w-9"
           >
-            <Paperclip className="w-5 h-5" />
+            <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
 
           {/* Text Input */}
           <div className="flex-1 min-w-0">
-            <div className="mb-1">
-              {uploadedFiles.length > 0 && (
-                <div className=" border-slate-700/50 bg-slate-900/30 backdrop-blur-sm p-2 pt-1">
-                  <div className="max-w-4xl mx-auto">
-                    <h3 className="text-sm font-medium text-slate-300 mb-3">
-                      Uploaded Documents
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {uploadedFiles.map((file, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center gap-2 bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 backdrop-blur-sm"
-                        >
-                          <FileText className="w-4 h-4 text-red-400" />
-                          <div className="flex flex-col">
-                            <span className="text-sm text-slate-200 font-medium truncate max-w-[200px]">
-                              {file.name}
-                            </span>
-                            <span className="text-xs text-slate-400">
-                              {formatFileSize(file.size)}
-                            </span>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveFile(file.name)}
-                            className="text-slate-400 hover:text-red-400 h-6 w-6 p-0"
-                          >
-                            <X className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      ))}
+            {/* Uploaded Files Display - Mobile optimized */}
+            {uploadedFiles.length > 0 && (
+              <div className="border-slate-700/50 bg-slate-900/30 backdrop-blur-sm p-2 mb-2 rounded-lg">
+                <h3 className="text-xs font-medium text-slate-300 mb-2">
+                  Documents
+                </h3>
+                <div className="flex flex-wrap gap-1.5">
+                  {uploadedFiles.map((file, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-1.5 bg-slate-800/50 border border-slate-700/50 rounded-md px-2 py-1 backdrop-blur-sm min-w-0"
+                    >
+                      <FileText className="w-3 h-3 text-red-400 flex-shrink-0" />
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-xs text-slate-200 font-medium truncate max-w-[100px] sm:max-w-[150px]">
+                          {file.name}
+                        </span>
+                        <span className="text-xs text-slate-400">
+                          {formatFileSize(file.size)}
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveFile(file.name)}
+                        className="text-slate-400 hover:text-red-400 h-4 w-4 p-0 flex-shrink-0"
+                      >
+                        <X className="w-2.5 h-2.5" />
+                      </Button>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             <Textarea
               value={message}
@@ -184,11 +181,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
               onKeyDown={handleKeyDown}
               placeholder="Ask anything about your documents..."
               disabled={activeFeature == "analyze" || disabled}
-              className=" resize-none border-0 bg-transparent text-white placeholder-slate-400 focus:ring-0 focus:ring-offset-0 p-0 text-lg leading-6 h-full"
+              className="resize-none border-0 bg-transparent text-white placeholder-slate-400 focus:ring-0 focus:ring-offset-0 p-0 text-sm sm:text-lg leading-5 sm:leading-6 h-full min-h-[32px] max-h-[120px]"
               rows={1}
               style={{
-                minHeight: "32px",
-                maxHeight: "120px",
                 overflow: message.length > 100 ? "auto" : "hidden",
               }}
             />
@@ -200,11 +195,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
             variant="ghost"
             size="sm"
             disabled={disabled}
-            className="text-slate-400 hover:text-white p-2 flex-shrink-0 hover:bg-black"
+            className="text-slate-400 hover:text-white p-1.5 sm:p-2 flex-shrink-0 hover:bg-black h-8 w-8 sm:h-9 sm:w-9"
           >
-            <Mic className="w-5 h-5" />
+            <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
 
+          {/* Send Button */}
           <Button
             type="submit"
             disabled={
@@ -213,15 +209,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
               (activeFeature == "analyze" && uploadedFiles?.length == 0)
             }
             size="sm"
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 p-2 flex-shrink-0"
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 p-1.5 sm:p-2 flex-shrink-0 h-8 w-8 sm:h-9 sm:w-9"
           >
-            <Send className="w-5 h-5" />
+            <Send className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
         </div>
 
-        <p className="text-xs text-slate-500 mt-2 text-center">
-          Press Enter to send, Shift + Enter for new line • Click 📎 to upload
-          PDF files
+        <p className="text-xs text-slate-500 mt-2 text-center px-2">
+          Press Enter to send, Shift + Enter for new line • Click 📎 to upload PDF files
         </p>
       </form>
     </div>
