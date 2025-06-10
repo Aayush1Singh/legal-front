@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { FileText, Gavel, Search, X } from "lucide-react";
+import { FileText, Gavel, Search, X, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
 import ChatMessage from "./ChatMessage";
 import TypingIndicator from "./TypingIndicator";
 import ChatInput from "./ChatInput";
 import WelcomeLogo from "./WelcomeLogo";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import remarkGfm from "remark-gfm";
 import {
   analyzeFile,
@@ -301,17 +302,26 @@ const RAGInterface: React.FC = () => {
         <div className="flex-1 flex flex-col min-w-0">
           {/* Header */}
           <header className="bg-slate-900/80 backdrop-blur-sm border-b border-slate-700/50 p-3 sm:p-4">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <SidebarTrigger className="text-slate-400 hover:text-white hover:bg-black h-8 w-8 sm:h-9 sm:w-9" />
-              <h1 className="text-base sm:text-lg font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent truncate">
-                LegalAI Assistant
-              </h1>
+            <div className="flex items-center justify-between gap-2 sm:gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <SidebarTrigger className="text-slate-400 hover:text-white hover:bg-black h-8 w-8 sm:h-9 sm:w-9" />
+                <h1 className="text-base sm:text-lg font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent truncate">
+                  LegalAI Assistant
+                </h1>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/u/settings")}
+                className="text-slate-400 hover:text-white hover:bg-slate-700/50 h-8 w-8 sm:h-9 sm:w-9 p-0"
+              >
+                <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
             </div>
           </header>
 
           {/* Uploaded Files Display */}
-
-          {/* {uploadedFiles.length > 0 && (
+          {uploadedFiles.length > 0 && (
             <div className="border-b border-slate-700/50 bg-slate-900/30 backdrop-blur-sm p-4">
               <div className="max-w-4xl mx-auto">
                 <h3 className="text-sm font-medium text-slate-300 mb-3">
@@ -346,7 +356,7 @@ const RAGInterface: React.FC = () => {
               </div>
             </div>
           )}
- */}
+
           {/* Chat Area */}
           <div className="flex-1 flex flex-col min-h-0">
             <ScrollArea className="flex-1">
