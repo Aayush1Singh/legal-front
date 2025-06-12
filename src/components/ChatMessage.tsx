@@ -3,6 +3,7 @@ import { User, Bot, Copy, ThumbsUp, ThumbsDown, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 interface ChatMessageProps {
   message: string;
   type: string;
@@ -79,9 +80,15 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                 isUser ? "text-white" : "text-slate-100"
               } leading-relaxed text-sm sm:text-base`}
             >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {message}
-              </ReactMarkdown>
+              <div className="prose prose-sm sm:prose lg:prose-lg markdown">
+                <ReactMarkdown
+                  // class="markdown"
+                  rehypePlugins={[rehypeRaw]}
+                  remarkPlugins={[remarkGfm]}
+                >
+                  {message}
+                </ReactMarkdown>
+              </div>
               {analysedDoc && (
                 <Button
                   onClick={() => onReSeeAnalysis(doc_id)}
