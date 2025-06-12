@@ -129,10 +129,10 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
             </div>
           </CardHeader>
 
-          <CardContent className="p-3 sm:p-6 flex-1 max-h-96 overlow-scroll">
-            <ScrollArea className="h-full">
-              <div className="space-y-4 sm:space-y-6 h-full">
-                <div className="bg-slate-800/50 rounded-lg border border-slate-700 overflow-hidden h-full">
+          <CardContent className="p-3 sm:p-6 flex-1 min-h-0">
+            <div className="space-y-4 sm:space-y-6 h-full">
+              <div className="bg-slate-800/50 rounded-lg border border-slate-700 overflow-hidden h-full flex flex-col">
+                <ScrollArea className="flex-1">
                   <div className="overflow-x-auto">
                     <Table className="">
                       <TableHeader>
@@ -152,7 +152,7 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
                           <TableHead className="text-slate-300 w-8 sm:w-12"></TableHead>
                         </TableRow>
                       </TableHeader>
-                      <TableBody className="h-20">
+                      <TableBody>
                         {analysisResults.map((result, index) => {
                           const totalIssues =
                             result.bias_flags.length +
@@ -299,9 +299,9 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
                       </TableBody>
                     </Table>
                   </div>
-                </div>
+                </ScrollArea>
               </div>
-            </ScrollArea>
+            </div>
           </CardContent>
 
           <CardFooter className="flex flex-col sm:flex-row justify-between bg-slate-800 border-t border-slate-700 py-3 sm:py-4 gap-3 sm:gap-0 flex-shrink-0">
