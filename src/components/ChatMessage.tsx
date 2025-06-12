@@ -8,7 +8,8 @@ interface ChatMessageProps {
   type: string;
   fileUpload?: boolean;
   analysedDoc?: boolean;
-  onReSeeAnalysis?: () => Promise<void>;
+  onReSeeAnalysis?: (doc_id) => Promise<void>;
+  doc_id?: string;
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({
@@ -17,6 +18,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   fileUpload = false,
   analysedDoc = false,
   onReSeeAnalysis,
+  doc_id,
 }) => {
   function fetchAndDisplay() {}
   const isUser = type === "user";
@@ -82,7 +84,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
               </ReactMarkdown>
               {analysedDoc && (
                 <Button
-                  onClick={() => onReSeeAnalysis()}
+                  onClick={() => onReSeeAnalysis(doc_id)}
                   className="mt-2 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-auto"
                 >
                   See Analysis

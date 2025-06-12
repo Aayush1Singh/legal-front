@@ -1,6 +1,13 @@
-
 import React, { useState } from "react";
-import { AlertTriangle, CheckCircle, ChevronDown, ChevronUp, HelpCircle, Info, X } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle,
+  ChevronDown,
+  ChevronUp,
+  HelpCircle,
+  Info,
+  X,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -45,8 +52,10 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
 
   const getBiasColor = (score: number) => {
     if (score >= 0.7) return "bg-red-950/40 border-red-500/50 text-red-300";
-    if (score >= 0.4) return "bg-amber-950/40 border-amber-500/50 text-amber-300";
-    if (score >= 0.2) return "bg-yellow-950/40 border-yellow-500/50 text-yellow-300";
+    if (score >= 0.4)
+      return "bg-amber-950/40 border-amber-500/50 text-amber-300";
+    if (score >= 0.2)
+      return "bg-yellow-950/40 border-yellow-500/50 text-yellow-300";
     return "bg-green-950/40 border-green-500/50 text-green-300";
   };
 
@@ -59,12 +68,18 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
 
   const getIssueIcon = (type: string) => {
     switch (type) {
-      case "bias": return <AlertTriangle className="w-4 h-4 text-red-400" />;
-      case "ambiguity": return <HelpCircle className="w-4 h-4 text-yellow-400" />;
-      case "loophole": return <Info className="w-4 h-4 text-amber-400" />;
-      case "legal": return <AlertTriangle className="w-4 h-4 text-red-500" />;
-      case "improvement": return <CheckCircle className="w-4 h-4 text-emerald-400" />;
-      default: return <Info className="w-4 h-4" />;
+      case "bias":
+        return <AlertTriangle className="w-4 h-4 text-red-400" />;
+      case "ambiguity":
+        return <HelpCircle className="w-4 h-4 text-yellow-400" />;
+      case "loophole":
+        return <Info className="w-4 h-4 text-amber-400" />;
+      case "legal":
+        return <AlertTriangle className="w-4 h-4 text-red-500" />;
+      case "improvement":
+        return <CheckCircle className="w-4 h-4 text-emerald-400" />;
+      default:
+        return <Info className="w-4 h-4" />;
     }
   };
 
@@ -77,7 +92,10 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
         </h4>
         <ul className="space-y-2">
           {items.map((item, idx) => (
-            <li key={idx} className="text-sm text-slate-400 pl-6 border-l border-slate-700 py-1">
+            <li
+              key={idx}
+              className="text-sm text-slate-400 pl-6 border-l border-slate-700 py-1"
+            >
               {item}
             </li>
           ))}
@@ -100,10 +118,10 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
                   Analysis of {analysisResults.length} clauses
                 </CardDescription>
               </div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={onClose} 
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
                 className="text-slate-400 flex-shrink-0 h-8 w-8 sm:h-9 sm:w-9 p-0"
               >
                 <X className="h-4 w-4" />
@@ -111,39 +129,49 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
             </div>
           </CardHeader>
 
-          <CardContent className="p-3 sm:p-6 flex-1 overflow-hidden">
+          <CardContent className="p-3 sm:p-6 flex-1 max-h-96 overlow-scroll">
             <ScrollArea className="h-full">
-              <div className="space-y-4 sm:space-y-6">
-                <div className="bg-slate-800/50 rounded-lg border border-slate-700 overflow-hidden">
+              <div className="space-y-4 sm:space-y-6 h-full">
+                <div className="bg-slate-800/50 rounded-lg border border-slate-700 overflow-hidden h-full">
                   <div className="overflow-x-auto">
-                    <Table>
+                    <Table className="">
                       <TableHeader>
                         <TableRow className="hover:bg-transparent border-slate-700">
-                          <TableHead className="text-slate-300 w-12 sm:w-20 text-xs sm:text-sm">Clause</TableHead>
-                          <TableHead className="text-slate-300 min-w-[120px] text-xs sm:text-sm">Summary</TableHead>
-                          <TableHead className="text-slate-300 w-24 sm:w-36 text-xs sm:text-sm">Bias Score</TableHead>
-                          <TableHead className="text-slate-300 w-16 sm:w-24 text-xs sm:text-sm">Issues</TableHead>
+                          <TableHead className="text-slate-300 w-12 sm:w-20 text-xs sm:text-sm">
+                            Clause
+                          </TableHead>
+                          <TableHead className="text-slate-300 min-w-[120px] text-xs sm:text-sm">
+                            Summary
+                          </TableHead>
+                          <TableHead className="text-slate-300 w-24 sm:w-36 text-xs sm:text-sm">
+                            Bias Score
+                          </TableHead>
+                          <TableHead className="text-slate-300 w-16 sm:w-24 text-xs sm:text-sm">
+                            Issues
+                          </TableHead>
                           <TableHead className="text-slate-300 w-8 sm:w-12"></TableHead>
                         </TableRow>
                       </TableHeader>
-                      <TableBody>
+                      <TableBody className="h-20">
                         {analysisResults.map((result, index) => {
-                          const totalIssues = 
-                            result.bias_flags.length + 
-                            result.ambiguities.length + 
-                            result.potential_loopholes.length + 
+                          const totalIssues =
+                            result.bias_flags.length +
+                            result.ambiguities.length +
+                            result.potential_loopholes.length +
                             result.legal_conflicts.length;
-                            
+
                           const isExpanded = expandedClause === index;
-                          
+
                           return (
                             <React.Fragment key={index}>
-                              <TableRow 
+                              <TableRow
                                 className={cn(
                                   "cursor-pointer hover:bg-slate-800/70 border-slate-700/50",
                                   isExpanded && "bg-slate-800/50"
                                 )}
-                                onClick={() => setExpandedClause(isExpanded ? null : index)}
+                                onClick={() =>
+                                  setExpandedClause(isExpanded ? null : index)
+                                }
                               >
                                 <TableCell className="font-medium text-slate-300 text-xs sm:text-sm">
                                   #{index + 1}
@@ -155,21 +183,27 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
                                 </TableCell>
                                 <TableCell>
                                   <div className="flex items-center gap-1 sm:gap-2">
-                                    <span className={`w-8 h-5 sm:w-12 sm:h-6 rounded flex items-center justify-center font-medium text-xs ${getBiasTextColor(result.bias_score)}`}>
+                                    <span
+                                      className={`w-8 h-5 sm:w-12 sm:h-6 rounded flex items-center justify-center font-medium text-xs ${getBiasTextColor(
+                                        result.bias_score
+                                      )}`}
+                                    >
                                       {result.bias_score.toFixed(2)}
                                     </span>
                                     <div className="w-12 sm:w-full bg-slate-700 rounded-full h-1.5 sm:h-2">
-                                      <div 
+                                      <div
                                         className={`h-1.5 sm:h-2 rounded-full ${
-                                          result.bias_score >= 0.7 
-                                            ? "bg-red-500" 
-                                            : result.bias_score >= 0.4 
-                                            ? "bg-amber-500" 
-                                            : result.bias_score >= 0.2 
+                                          result.bias_score >= 0.7
+                                            ? "bg-red-500"
+                                            : result.bias_score >= 0.4
+                                            ? "bg-amber-500"
+                                            : result.bias_score >= 0.2
                                             ? "bg-yellow-500"
                                             : "bg-green-500"
                                         }`}
-                                        style={{ width: `${result.bias_score * 100}%` }}
+                                        style={{
+                                          width: `${result.bias_score * 100}%`,
+                                        }}
                                       ></div>
                                     </div>
                                   </div>
@@ -186,13 +220,15 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
                                   )}
                                 </TableCell>
                                 <TableCell>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
                                     className="p-0 h-6 w-6 sm:h-8 sm:w-8"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      setExpandedClause(isExpanded ? null : index);
+                                      setExpandedClause(
+                                        isExpanded ? null : index
+                                      );
                                     }}
                                   >
                                     {isExpanded ? (
@@ -203,27 +239,54 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
                                   </Button>
                                 </TableCell>
                               </TableRow>
-                              
+
                               {isExpanded && (
                                 <TableRow className="hover:bg-transparent border-slate-700/50">
                                   <TableCell colSpan={5} className="p-0">
-                                    <div className={`p-3 sm:p-4 ${getBiasColor(result.bias_score)}`}>
+                                    <div
+                                      className={`p-3 sm:p-4 ${getBiasColor(
+                                        result.bias_score
+                                      )}`}
+                                    >
                                       <div className="mb-3 sm:mb-4 border-b border-slate-600/30 pb-3 sm:pb-4">
-                                        <h3 className="text-xs sm:text-sm font-medium text-slate-200 mb-2">Original Clause:</h3>
+                                        <h3 className="text-xs sm:text-sm font-medium text-slate-200 mb-2">
+                                          Original Clause:
+                                        </h3>
                                         <p className="text-xs sm:text-sm text-slate-300 bg-black/30 p-2 sm:p-3 rounded">
                                           {result.clause}
                                         </p>
                                       </div>
-                                      
+
                                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                                         <div>
-                                          {renderIssueList(result.bias_flags, "bias", "Bias Flags")}
-                                          {renderIssueList(result.ambiguities, "ambiguity", "Ambiguities")}
+                                          {renderIssueList(
+                                            result.bias_flags,
+                                            "bias",
+                                            "Bias Flags"
+                                          )}
+                                          {renderIssueList(
+                                            result.ambiguities,
+                                            "ambiguity",
+                                            "Ambiguities"
+                                          )}
                                         </div>
                                         <div>
-                                          {renderIssueList(result.potential_loopholes, "loophole", "Potential Loopholes")}
-                                          {renderIssueList(result.legal_conflicts, "legal", "Legal Conflicts")}
-                                          {result.improvements && renderIssueList(result.improvements, "improvement", "Suggested Improvements")}
+                                          {renderIssueList(
+                                            result.potential_loopholes,
+                                            "loophole",
+                                            "Potential Loopholes"
+                                          )}
+                                          {renderIssueList(
+                                            result.legal_conflicts,
+                                            "legal",
+                                            "Legal Conflicts"
+                                          )}
+                                          {result.improvements &&
+                                            renderIssueList(
+                                              result.improvements,
+                                              "improvement",
+                                              "Suggested Improvements"
+                                            )}
                                         </div>
                                       </div>
                                     </div>
@@ -260,9 +323,9 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
                 <span>Very High</span>
               </div>
             </div>
-            <Button 
-              onClick={onClose} 
-              variant="outline" 
+            <Button
+              onClick={onClose}
+              variant="outline"
               className="border-slate-600 text-slate-300 text-sm w-full sm:w-auto"
             >
               Close

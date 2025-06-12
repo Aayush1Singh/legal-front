@@ -16,18 +16,30 @@ export async function handleFileUploadToDatabase(file: File, session_id) {
   // const formData = new FormData();
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  const randomNumber = Math.random();
+  console.log(randomNumber, String(randomNumber).slice(2));
   const { data, error } = await supabase.storage
     .from("file-storage")
-    .update(`${session_id}.pdf`, file, {
+    .update(`${session_id}/${String(randomNumber).slice(2)}.pdf`, file, {
       cacheControl: "3600",
       upsert: false,
     });
+
   if (error) {
     return { message: "failed" };
-  } else return { message: "success" };
+  }
 
+  const response = await axios.post(
+    `${apiUrl}/session/add_document/${session_id}`,
+    {
+      id: String(randomNumber).slice(2),
+    },
+    {
+      withCredentials: true,
+    }
+  );
+  return { message: "success" };
   console.log(data, error);
-
   // formData.append("file", file); // 'file' is the field name expected by the backend
   // try {
   //   const response = await axios.post(

@@ -89,10 +89,13 @@ export async function analyzeFile(session_id) {
   const data = response.data as res;
   return data;
 }
-export async function loadAnalysis(session_id) {
+export async function loadAnalysis(session_id, doc_id) {
   const response = await axios.get(
     `${apiUrl}/session/load_analysis/${session_id}`,
     {
+      params: {
+        doc_id,
+      },
       withCredentials: true,
     }
   );

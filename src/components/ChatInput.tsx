@@ -110,7 +110,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (activeFeature == "analyze") setMessage("");
   }, [activeFeature]);
   return (
-    <div className="border-t border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-3 sm:p-4">
+    <div className="border-t border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-3 sm:p-4 ">
       <form onSubmit={handleSubmit} className="max-w-full sm:max-w-4xl mx-auto">
         <div className="relative flex items-end gap-2 p-2 sm:p-3 bg-slate-800/50 border border-slate-700/50 rounded-xl sm:rounded-2xl backdrop-blur-sm">
           {/* Hidden file input */}
@@ -216,7 +216,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
         </div>
 
         <p className="text-xs text-slate-500 mt-2 text-center px-2">
-          Press Enter to send, Shift + Enter for new line • Click 📎 to upload PDF files
+          Press Enter to send, Shift + Enter for new line • Click 📎 to upload
+          PDF files
         </p>
       </form>
     </div>

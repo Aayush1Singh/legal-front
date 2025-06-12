@@ -22,12 +22,13 @@ import { handleFileUploadToDatabase } from "@/services/FileHandler";
 import { useToast } from "@/hooks/use-toast";
 import AnalysisDisplay, { AnalysisClause } from "./AnalysisDisplay";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
+import { useSelector } from "react-redux";
 interface Message {
   query: string;
   response?: string;
   isUpload?: boolean;
   analysedDoc?: boolean;
+  doc_id?: string;
 }
 
 export interface UploadedFile {
@@ -38,6 +39,8 @@ export interface UploadedFile {
 }
 
 const RAGInterface: React.FC = () => {
+  const data = useSelector((state) => state.user);
+  console.log(data);
   const { toast } = useToast();
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -287,9 +290,9 @@ const RAGInterface: React.FC = () => {
       ];
     });
   }
-  async function reSeeAnalysis() {
+  async function reSeeAnalysis(doc_id) {
     const session_id = params.get("session_id");
-    const data = await loadAnalysis(session_id);
+    const data = await loadAnalysis(session_id, doc_id);
     setAnalysisResults(data.response);
     setShowAnalysisModal(true);
   }
@@ -319,46 +322,8 @@ const RAGInterface: React.FC = () => {
               </Button>
             </div>
           </header>
-
-          {/* Uploaded Files Display */}
-          {uploadedFiles.length > 0 && (
-            <div className="border-b border-slate-700/50 bg-slate-900/30 backdrop-blur-sm p-4">
-              <div className="max-w-4xl mx-auto">
-                <h3 className="text-sm font-medium text-slate-300 mb-3">
-                  Uploaded Documents
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {uploadedFiles.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 bg-slate-800/50 border border-slate-700/50 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 backdrop-blur-sm min-w-0"
-                    >
-                      <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-red-400 flex-shrink-0" />
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-xs sm:text-sm text-slate-200 font-medium truncate max-w-[120px] sm:max-w-[200px]">
-                          {file.name}
-                        </span>
-                        <span className="text-xs text-slate-400">
-                          {formatFileSize(file.size)}
-                        </span>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveFile(file.name)}
-                        className="text-slate-400 hover:text-red-400 h-5 w-5 sm:h-6 sm:w-6 p-0 flex-shrink-0"
-                      >
-                        <X className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Chat Area */}
-          <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1 flex flex-col min-h-0 relative">
             <ScrollArea className="flex-1">
               <div className="max-w-full sm:max-w-4xl mx-auto p-3 sm:p-6 pb-4">
                 {messages.length === 0 ? (
@@ -380,6 +345,7 @@ const RAGInterface: React.FC = () => {
                             type="assistant"
                             analysedDoc={message.analysedDoc}
                             onReSeeAnalysis={reSeeAnalysis}
+                            doc_id={message.doc_id}
                           />
                         )}
                       </div>
@@ -392,28 +358,28 @@ const RAGInterface: React.FC = () => {
             </ScrollArea>
 
             {/* Feature Buttons */}
-
-            {/* Chat Input */}
-            <ChatInput
-              onSendMessage={handleSendMessage}
-              onFileUpload={handleFileUpload}
-              disabled={isTyping || isUploading}
-              uploadedFiles={uploadedFiles}
-              handleRemoveFile={handleRemoveFile}
-              activeFeature={activeFeature}
-              onSearchSimilar={onSearchSimilar}
-              onSendFile={onAnalyzeFile}
-            />
-            <div className="border-t border-slate-700/50 bg-slate-900/50 backdrop-blur-sm px-3 sm:px-4 py-2 sm:py-3">
-              <div className="max-w-full sm:max-w-4xl mx-auto">
-                <div className="flex gap-1 sm:gap-2 justify-center overflow-x-auto">
-                  {featureButtons.map(({ id, label, icon: Icon }) => (
-                    <Button
-                      key={id}
-                      variant={activeFeature === id ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setActiveFeature(id)}
-                      className={`
+            <div className="sticky absolute bottom-0">
+              {/* Chat Input */}
+              <ChatInput
+                onSendMessage={handleSendMessage}
+                onFileUpload={handleFileUpload}
+                disabled={isTyping || isUploading}
+                uploadedFiles={uploadedFiles}
+                handleRemoveFile={handleRemoveFile}
+                activeFeature={activeFeature}
+                onSearchSimilar={onSearchSimilar}
+                onSendFile={onAnalyzeFile}
+              />
+              <div className="border-t border-slate-700/50 bg-slate-900/50 backdrop-blur-sm px-3 sm:px-4 py-2 sm:py-3">
+                <div className="max-w-full sm:max-w-4xl mx-auto">
+                  <div className="flex gap-1 sm:gap-2 justify-center overflow-x-auto">
+                    {featureButtons.map(({ id, label, icon: Icon }) => (
+                      <Button
+                        key={id}
+                        variant={activeFeature === id ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setActiveFeature(id)}
+                        className={`
                         flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 h-8 sm:h-9
                         ${
                           activeFeature === id
@@ -421,18 +387,19 @@ const RAGInterface: React.FC = () => {
                             : "border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700/50"
                         }
                       `}
-                    >
-                      <Icon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                      <span className="hidden sm:inline">{label}</span>
-                      <span className="sm:hidden">
-                        {id === "similar"
-                          ? "Similar"
-                          : id === "analyze"
-                          ? "Analyze"
-                          : "Resolve"}
-                      </span>
-                    </Button>
-                  ))}
+                      >
+                        <Icon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">{label}</span>
+                        <span className="sm:hidden">
+                          {id === "similar"
+                            ? "Similar"
+                            : id === "analyze"
+                            ? "Analyze"
+                            : "Resolve"}
+                        </span>
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

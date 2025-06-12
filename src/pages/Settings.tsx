@@ -1,53 +1,47 @@
-
 import React, { useState } from "react";
 import { ArrowLeft, Mail, Lock, Trash2, Database } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-
+import { useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
 const Settings = () => {
+  const { handleSubmit, register } = useForm();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  // Mock user email - in real app, this would come from user context/auth
-  const userEmail = "user@example.com";
-
-  const handlePasswordChange = () => {
-    if (newPassword !== confirmPassword) {
-      toast({
-        title: "Error",
-        description: "New passwords don't match",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (newPassword.length < 8) {
-      toast({
-        title: "Error",
-        description: "Password must be at least 8 characters long",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Here you would implement actual password change logic
-    toast({
-      title: "Success",
-      description: "Password changed successfully",
+  function onSubmit(data) {
+    console.log(data);
+  }
+  function onError(data) {
+    console.log(data);
+    Object.entries(data).forEach((d) => {
+      console.log(d);
+      toast({ title: `Error in ${d[0]}`, description: `${d[1].message}` });
     });
-    
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
-  };
+  }
+  // Mock user email - in real app, this would come from user context/auth
+  const userEmail = useSelector((state) => state.user.email) || null;
+  // const userEmail = "user@example.com";
 
   const handleDeleteData = () => {
     // Here you would implement data deletion logic
@@ -102,7 +96,10 @@ const Settings = () => {
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4">
               <div className="space-y-1 sm:space-y-2">
-                <Label htmlFor="email" className="text-slate-300 text-sm sm:text-base">
+                <Label
+                  htmlFor="email"
+                  className="text-slate-300 text-sm sm:text-base"
+                >
                   Email Address
                 </Label>
                 <Input
@@ -116,67 +113,84 @@ const Settings = () => {
           </Card>
 
           {/* Change Password */}
-          <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
-            <CardHeader className="pb-3 sm:pb-6">
-              <CardTitle className="flex items-center gap-2 text-slate-100 text-lg sm:text-xl">
-                <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-green-400" />
-                Change Password
-              </CardTitle>
-              <CardDescription className="text-slate-400 text-sm sm:text-base">
-                Update your password to keep your account secure
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4">
-              <div className="space-y-1 sm:space-y-2">
-                <Label htmlFor="current-password" className="text-slate-300 text-sm sm:text-base">
-                  Current Password
-                </Label>
-                <Input
-                  id="current-password"
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="bg-slate-800/50 border-slate-600/50 text-slate-100 h-10 sm:h-11 text-sm sm:text-base focus:border-blue-400 focus:ring-blue-400"
-                  placeholder="Enter current password"
-                />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <form onSubmit={handleSubmit(onSubmit, onError)}>
+            <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
+              <CardHeader className="pb-3 sm:pb-6">
+                <CardTitle className="flex items-center gap-2 text-slate-100 text-lg sm:text-xl">
+                  <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-green-400" />
+                  Change Password
+                </CardTitle>
+                <CardDescription className="text-slate-400 text-sm sm:text-base">
+                  Update your password to keep your account secure
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 sm:space-y-4">
                 <div className="space-y-1 sm:space-y-2">
-                  <Label htmlFor="new-password" className="text-slate-300 text-sm sm:text-base">
-                    New Password
+                  <Label
+                    htmlFor="current-password"
+                    className="text-slate-300 text-sm sm:text-base"
+                  >
+                    Current Password
                   </Label>
                   <Input
-                    id="new-password"
+                    id="current-password"
                     type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
+                    {...(register("current-pass"),
+                    { required: "Current Password is required" })}
                     className="bg-slate-800/50 border-slate-600/50 text-slate-100 h-10 sm:h-11 text-sm sm:text-base focus:border-blue-400 focus:ring-blue-400"
-                    placeholder="Enter new password"
+                    placeholder="Enter current password"
                   />
                 </div>
-                <div className="space-y-1 sm:space-y-2">
-                  <Label htmlFor="confirm-password" className="text-slate-300 text-sm sm:text-base">
-                    Confirm Password
-                  </Label>
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="bg-slate-800/50 border-slate-600/50 text-slate-100 h-10 sm:h-11 text-sm sm:text-base focus:border-blue-400 focus:ring-blue-400"
-                    placeholder="Confirm new password"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="space-y-1 sm:space-y-2">
+                    <Label
+                      htmlFor="new-password"
+                      className="text-slate-300 text-sm sm:text-base"
+                    >
+                      New Password
+                    </Label>
+                    <Input
+                      id="new-password"
+                      type="password"
+                      {...(register("new-pass"),
+                      { required: "new password is required" })}
+                      className="bg-slate-800/50 border-slate-600/50 text-slate-100 h-10 sm:h-11 text-sm sm:text-base focus:border-blue-400 focus:ring-blue-400"
+                      placeholder="Enter new password"
+                    />
+                  </div>
+                  <div className="space-y-1 sm:space-y-2">
+                    <Label
+                      htmlFor="confirm-password"
+                      className="text-slate-300 text-sm sm:text-base"
+                    >
+                      Confirm Password
+                    </Label>
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      {...register("confirm-new-pass", {
+                        required: true,
+                        validate: (value, formValues) => {
+                          return (
+                            value === formValues["new-pass"] ||
+                            "new password and confirm password not same"
+                          );
+                        },
+                      })}
+                      className="bg-slate-800/50 border-slate-600/50 text-slate-100 h-10 sm:h-11 text-sm sm:text-base focus:border-blue-400 focus:ring-blue-400"
+                      placeholder="Confirm new password"
+                    />
+                  </div>
                 </div>
-              </div>
-              <Button
-                onClick={handlePasswordChange}
-                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white h-10 sm:h-11 px-4 sm:px-6 text-sm sm:text-base font-medium transition-all duration-200 hover:scale-105"
-                disabled={!currentPassword || !newPassword || !confirmPassword}
-              >
-                Update Password
-              </Button>
-            </CardContent>
-          </Card>
+                <Button
+                  type="submit"
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white h-10 sm:h-11 px-4 sm:px-6 text-sm sm:text-base font-medium transition-all duration-200 hover:scale-105"
+                >
+                  Update Password
+                </Button>
+              </CardContent>
+            </Card>
+          </form>
 
           {/* Danger Zone */}
           <Card className="bg-red-950/20 border-red-800/50 backdrop-blur-sm">
@@ -204,9 +218,13 @@ const Settings = () => {
                   </AlertDialogTrigger>
                   <AlertDialogContent className="bg-slate-900 border-slate-700 max-w-sm sm:max-w-md">
                     <AlertDialogHeader>
-                      <AlertDialogTitle className="text-slate-100">Delete All Data</AlertDialogTitle>
+                      <AlertDialogTitle className="text-slate-100">
+                        Delete All Data
+                      </AlertDialogTitle>
                       <AlertDialogDescription className="text-slate-400">
-                        This will permanently delete all your chat history, uploaded files, and analysis results. This action cannot be undone.
+                        This will permanently delete all your chat history,
+                        uploaded files, and analysis results. This action cannot
+                        be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="flex-col sm:flex-row gap-2">
@@ -236,9 +254,13 @@ const Settings = () => {
                   </AlertDialogTrigger>
                   <AlertDialogContent className="bg-slate-900 border-slate-700 max-w-sm sm:max-w-md">
                     <AlertDialogHeader>
-                      <AlertDialogTitle className="text-slate-100">Delete Account</AlertDialogTitle>
+                      <AlertDialogTitle className="text-slate-100">
+                        Delete Account
+                      </AlertDialogTitle>
                       <AlertDialogDescription className="text-slate-400">
-                        This will permanently delete your account and all associated data. You will not be able to recover your account or data after this action.
+                        This will permanently delete your account and all
+                        associated data. You will not be able to recover your
+                        account or data after this action.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="flex-col sm:flex-row gap-2">

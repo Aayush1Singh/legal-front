@@ -22,7 +22,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { newSession, prevChats } from "@/services/ChatHandler";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, NavLink } from "react-router-dom";
 
 interface Response {
   session_id: string;
@@ -152,7 +152,9 @@ const AppSidebar: React.FC = () => {
           <SidebarMenuItem>
             <SidebarMenuButton className="text-slate-300 hover:text-white hover:bg-slate-700/50">
               <Settings className="w-4 h-4" />
-              <span>Settings</span>
+              <NavLink to="/u/settings" className="w-full">
+                Settings
+              </NavLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
