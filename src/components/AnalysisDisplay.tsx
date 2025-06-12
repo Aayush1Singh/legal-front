@@ -107,14 +107,14 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
       <div className="w-full max-w-7xl max-h-[95vh] flex flex-col">
-        <Card className="border border-slate-700 bg-slate-900 shadow-xl flex flex-col h-full">
+        <Card className="border border-slate-700 bg-slate-900 shadow-xl flex flex-col h-full ">
           <CardHeader className="bg-slate-800 border-b border-slate-700 flex-shrink-0">
             <div className="flex justify-between items-start gap-4">
               <div className="min-w-0 flex-1">
                 <CardTitle className="text-lg sm:text-xl text-white truncate">
                   Document Analysis Results
                 </CardTitle>
-                <CardDescription className="text-slate-400 text-sm">
+                <CardDescription className="text-slate-400 text-sm ">
                   Analysis of {analysisResults.length} clauses
                 </CardDescription>
               </div>
@@ -129,7 +129,7 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({
             </div>
           </CardHeader>
 
-          <CardContent className="p-3 sm:p-6 flex-1 min-h-0">
+          <CardContent className="p-3 sm:p-6 flex-1 min-h-0 max-h-[70vh] overflow-y-scroll">
             <div className="space-y-4 sm:space-y-6 h-full">
               <div className="bg-slate-800/50 rounded-lg border border-slate-700 overflow-hidden h-full flex flex-col">
                 <ScrollArea className="flex-1">
