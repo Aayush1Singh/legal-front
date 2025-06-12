@@ -43,12 +43,17 @@ interface conversation {
 interface Resi {
   response: conversation[];
 }
+interface SessionTemplate {
+  title: string;
+  session_id: string;
+  created_at?: Date;
+}
 export async function prevChats() {
   const response = await axios.get(`${apiUrl}/get_all_sessions`, {
     withCredentials: true,
   });
   interface Resi {
-    response: string[];
+    response: SessionTemplate[];
   }
   const res = response.data as Resi;
   console.log(res);

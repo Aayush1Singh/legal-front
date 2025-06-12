@@ -30,9 +30,14 @@ interface Response {
 interface conversation {
   session_id: string;
 }
+interface SessionTemplate {
+  title: string;
+  session_id: string;
+  created_at?: Date;
+}
 const AppSidebar: React.FC = () => {
   // const conversations: conversation[] = [];
-  const [conversations, setConversations] = useState<string[]>([]);
+  const [conversations, setConversations] = useState<SessionTemplate[]>([]);
 
   useEffect(() => {
     async function getChats() {
@@ -117,7 +122,7 @@ const AppSidebar: React.FC = () => {
                     onClick={() => {
                       const params = new URLSearchParams(location.search);
 
-                      params.set("session_id", conv);
+                      params.set("session_id", conv.session_id);
                       navigate(`${location.pathname}?${params.toString()}`, {
                         replace: true,
                       });
@@ -127,7 +132,7 @@ const AppSidebar: React.FC = () => {
                       <MessageSquare className="w-4 h-4 text-blue-400 mt-1 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-white truncate">
-                          {conv}
+                          {conv.title}
 
                           {/* {conv.title} */}
                         </p>
