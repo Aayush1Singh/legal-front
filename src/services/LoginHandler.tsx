@@ -1,4 +1,5 @@
 import axios from "axios";
+import { eachMonthOfInterval } from "date-fns";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface Request {
@@ -48,5 +49,19 @@ export async function LoginHandler(email, password) {
     // headers: { Authorization: `Bearer ${""}` },
     withCredentials: true,
   });
+  return response.data;
+}
+export async function ResetPasswordHandler(password, new_password) {
+  const response = await axios.post(
+    `${apiUrl}/reset_password`,
+    {
+      password,
+      new_password,
+    },
+    {
+      // headers: { Authorization: `Bearer ${""}` },
+      withCredentials: true,
+    }
+  );
   return response.data;
 }

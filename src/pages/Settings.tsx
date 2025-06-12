@@ -25,12 +25,27 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
+import { ResetPasswordHandler } from "@/services/LoginHandler";
 const Settings = () => {
-  const { handleSubmit, register } = useForm();
+  const { handleSubmit, register, reset } = useForm();
   const navigate = useNavigate();
   const { toast } = useToast();
-  function onSubmit(data) {
+  async function onSubmit(data) {
     console.log(data);
+    interface resi {
+      message: string;
+      error?: string;
+    }
+    const res = (await ResetPasswordHandler(
+      data.current_pass,
+      data.new_pass
+    )) as resi;
+    if (res.message == "success") {
+      toast({ title: "Password Changed Successfully" });
+    } else {
+      toast({ title: "Error", description: res.error });
+    }
+    reset();
   }
   function onError(data) {
     console.log(data);
@@ -135,8 +150,9 @@ const Settings = () => {
                   <Input
                     id="current-password"
                     type="password"
-                    {...(register("current-pass"),
-                    { required: "Current Password is required" })}
+                    {...register("current_pass", {
+                      required: "Current Password is required",
+                    })}
                     className="bg-slate-800/50 border-slate-600/50 text-slate-100 h-10 sm:h-11 text-sm sm:text-base focus:border-blue-400 focus:ring-blue-400"
                     placeholder="Enter current password"
                   />
@@ -152,8 +168,9 @@ const Settings = () => {
                     <Input
                       id="new-password"
                       type="password"
-                      {...(register("new-pass"),
-                      { required: "new password is required" })}
+                      {...register("new_pass", {
+                        required: "new password is required",
+                      })}
                       className="bg-slate-800/50 border-slate-600/50 text-slate-100 h-10 sm:h-11 text-sm sm:text-base focus:border-blue-400 focus:ring-blue-400"
                       placeholder="Enter new password"
                     />
@@ -168,11 +185,11 @@ const Settings = () => {
                     <Input
                       id="confirm-password"
                       type="password"
-                      {...register("confirm-new-pass", {
+                      {...register("confirm_new_pass", {
                         required: true,
                         validate: (value, formValues) => {
                           return (
-                            value === formValues["new-pass"] ||
+                            value === formValues["new_pass"] ||
                             "new password and confirm password not same"
                           );
                         },

@@ -9,7 +9,6 @@ import TypingIndicator from "./TypingIndicator";
 import ChatInput from "./ChatInput";
 import WelcomeLogo from "./WelcomeLogo";
 import { useLocation } from "react-router-dom";
-import remarkGfm from "remark-gfm";
 import {
   analyzeFile,
   assistantResponse,
@@ -206,7 +205,7 @@ const RAGInterface: React.FC = () => {
     async function getMessages() {
       const res = (await getChat(searchParam)) as Recipi;
       if (res == null) return;
-
+      if (res.response.length == 0) return;
       setMessages(res.response);
     }
     getMessages();
