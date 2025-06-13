@@ -12,6 +12,7 @@ interface ChatInputProps {
   onSendMessage: (session_id: string, message: string) => void;
   onFileUpload?: (file: File) => void;
   disabled?: boolean;
+  setFlagAbruptNew?: React.Dispatch<React.SetStateAction<boolean>>;
   uploadedFiles?: UploadedFile[];
   handleRemoveFile?: (fileName: string) => void;
   activeFeature?: "similar" | "analyze" | "resolve";
@@ -35,6 +36,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   activeFeature,
   onSendFile,
   onSearchSimilar,
+  setFlagAbruptNew,
 }) => {
   const [message, setMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -58,6 +60,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         session_id = response.session_id;
       }
       await createSession();
+      setFlagAbruptNew(true);
     }
 
     if (activeFeature == "analyze") {

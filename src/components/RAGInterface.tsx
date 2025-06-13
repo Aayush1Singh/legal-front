@@ -41,7 +41,7 @@ const RAGInterface: React.FC = () => {
   const data = useSelector((state) => state.user);
   console.log(data);
   const { toast } = useToast();
-
+  const [flagAbrupt, setFlagAbruptNew] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [isUploading, setUploading] = useState(false);
@@ -198,6 +198,10 @@ const RAGInterface: React.FC = () => {
       setFlag(false);
       return;
     }
+    if (flagAbrupt) {
+      setFlagAbruptNew(false);
+      return;
+    }
     const searchParam = query.get("session_id");
     if (searchParam === null) {
       return;
@@ -205,7 +209,7 @@ const RAGInterface: React.FC = () => {
     async function getMessages() {
       const res = (await getChat(searchParam)) as Recipi;
       if (res == null) return;
-      if (res.response.length == 0) return;
+      // if (res.response.length == 0) return;
       setMessages(res.response);
     }
     getMessages();
@@ -368,6 +372,7 @@ const RAGInterface: React.FC = () => {
                 activeFeature={activeFeature}
                 onSearchSimilar={onSearchSimilar}
                 onSendFile={onAnalyzeFile}
+                setFlagAbruptNew={setFlagAbruptNew}
               />
               <div className="border-t border-slate-700/50 bg-slate-900/50 backdrop-blur-sm px-3 sm:px-4 py-2 sm:py-3">
                 <div className="max-w-full sm:max-w-4xl mx-auto">
