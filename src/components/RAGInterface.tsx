@@ -38,9 +38,14 @@ export interface UploadedFile {
   uploadedAt: Date;
   file: File;
 }
+interface RootState {
+  user: {
+    email: string;
+  };
+}
 
 const RAGInterface: React.FC = () => {
-  const data = useSelector((state) => state.user);
+  const data = useSelector((state: RootState) => state.user);
   const { ref, inView, entry } = useInView({
     threshold: 0,
   });

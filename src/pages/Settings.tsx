@@ -27,18 +27,26 @@ import { useToast } from "@/hooks/use-toast";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { ResetPasswordHandler } from "@/services/LoginHandler";
+
+interface RootState {
+  user: {
+    email: string;
+  };
+}
+
+interface ResetPasswordResponse {
+  message?: string;
+  status: string;
+}
+
 const Settings = () => {
   const { handleSubmit, register, reset } = useForm();
   const navigate = useNavigate();
-  async function onSubmit(data) {
-    interface resi {
-      message?: string;
-      status: string;
-    }
+  async function onSubmit(data: any) {
     const res = (await ResetPasswordHandler(
       data.current_pass,
       data.new_pass
-    )) as resi;
+    )) as ResetPasswordResponse;
     if (res.status == "success") {
       toast.success("Password Changed Successfully");
     } else {
@@ -46,7 +54,7 @@ const Settings = () => {
     }
     reset();
   }
-  function onError(data) {
+  function onError(data: any) {
     console.log(data);
     Object.entries(data).forEach((d) => {
       console.log(d);
@@ -54,7 +62,7 @@ const Settings = () => {
     });
   }
   // Mock user email - in real app, this would come from user context/auth
-  const userEmail = useSelector((state) => state.user.email) || null;
+  const userEmail = useSelector((state: RootState) => state.user.email) || null;
   // const userEmail = "user@example.com";
 
   const handleDeleteData = () => {
