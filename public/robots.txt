@@ -1,14 +1,11 @@
-User-agent: Googlebot
+User‑agent: *
+# Publicly crawlable pages
 Allow: /
+Allow: /login
+Allow: /signup
 
-User-agent: Bingbot
-Allow: /
+# Everything under /u is private—don’t crawl until after login
+Disallow: /u
 
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: *
-Allow: /
+# Point crawlers at your sitemap
+Sitemap: https://legalai.com/sitemap.xml

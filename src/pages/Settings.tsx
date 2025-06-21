@@ -50,7 +50,7 @@ const Settings = () => {
     console.log(data);
     Object.entries(data).forEach((d) => {
       console.log(d);
-      toast({ title: `Error in ${d[0]}`, description: `${d[1].message}` });
+      toast.error(`Error in ${d[0]} -> ${d[1].message}`);
     });
   }
   // Mock user email - in real app, this would come from user context/auth
@@ -59,19 +59,12 @@ const Settings = () => {
 
   const handleDeleteData = () => {
     // Here you would implement data deletion logic
-    toast({
-      title: "Data Deleted",
-      description: "All your data has been successfully deleted",
-    });
+    toast.success("Data Deleted");
   };
 
   const handleDeleteAccount = () => {
     // Here you would implement account deletion logic
-    toast({
-      title: "Account Deleted",
-      description: "Your account has been successfully deleted",
-      variant: "destructive",
-    });
+    toast.success("Account Deleted");
     navigate("/");
   };
 

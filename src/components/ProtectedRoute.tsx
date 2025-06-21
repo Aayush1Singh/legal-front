@@ -12,15 +12,15 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     async function checkLogin() {
       const result = await isLoggedIn();
-      console.log(result);
+      // console.log(result);
       setIsAuthenticated(
         (result as { message?: string; status?: string }).status === "success"
       );
-      console.log(result);
+      // console.log(result);
       if (
         (result as { message?: string; status?: string }).status === "success"
       ) {
-        console.log(result.decoded.email);
+        // console.log(result.decoded.email);
         dispatch(LogIn(result.decoded.email));
       } else {
         dispatch(LogOut());

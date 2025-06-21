@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { AnalysisClause } from "@/components/AnalysisDisplay";
+import { toast } from "react-toastify";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 export async function newSession() {
   const response = await axios.post(
@@ -8,6 +9,9 @@ export async function newSession() {
     {},
     { withCredentials: true }
   );
+  if (response.statusText !== "OK") {
+    toast.error("Internal Server Error");
+  }
   return response.data;
 }
 export async function getChat(session_id) {
@@ -17,6 +21,9 @@ export async function getChat(session_id) {
 
     { withCredentials: true }
   );
+  if (response.statusText !== "OK") {
+    toast.error("Internal Server Error");
+  }
   return response.data;
 }
 export async function assistantResponse(query, session_id, isUpload: boolean) {
@@ -28,6 +35,9 @@ export async function assistantResponse(query, session_id, isUpload: boolean) {
     },
     withCredentials: true,
   });
+  if (response.statusText !== "OK") {
+    toast.error("Internal Server Error");
+  }
   interface Res {
     response?: string;
     status: string;
@@ -52,12 +62,17 @@ export async function prevChats() {
   const response = await axios.get(`${apiUrl}/get_all_sessions`, {
     withCredentials: true,
   });
+  if (response.statusText !== "OK") {
+    toast.error("Internal Server Error");
+  }
   interface Resi {
-    response: SessionTemplate[];
+    response?: SessionTemplate[];
+    message?: string;
+    status: string;
   }
   const res = response.data as Resi;
   console.log(res);
-  return res.response;
+  return res;
 }
 export async function similarSearch(query, session_id) {
   const response = await axios.get(
@@ -69,6 +84,9 @@ export async function similarSearch(query, session_id) {
       withCredentials: true,
     }
   );
+  if (response.statusText !== "OK") {
+    toast.error("Internal Server Error");
+  }
 
   return response.data;
 }
@@ -91,7 +109,9 @@ export async function analyzeFile(session_id) {
   const response = await axios.get(`${apiUrl}/session/analyze/${session_id}`, {
     withCredentials: true,
   });
-
+  if (response.statusText !== "OK") {
+    toast.error("Internal Server Error");
+  }
   const data = response.data as res;
   return data;
 }
@@ -105,6 +125,9 @@ export async function loadAnalysis(session_id, doc_id) {
       withCredentials: true,
     }
   );
+  if (response.statusText !== "OK") {
+    toast.error("Internal Server Error");
+  }
   interface res {
     response?: AnalysisClause[];
     message?: string;

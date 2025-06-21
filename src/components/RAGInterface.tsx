@@ -9,6 +9,7 @@ import TypingIndicator from "./TypingIndicator";
 import ChatInput from "./ChatInput";
 import WelcomeLogo from "./WelcomeLogo";
 import { useLocation } from "react-router-dom";
+import { useInView } from "react-intersection-observer";
 import {
   analyzeFile,
   assistantResponse,
@@ -40,6 +41,9 @@ export interface UploadedFile {
 
 const RAGInterface: React.FC = () => {
   const data = useSelector((state) => state.user);
+  const { ref, inView, entry } = useInView({
+    threshold: 0,
+  });
   const [flagAbrupt, setFlagAbruptNew] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -180,7 +184,6 @@ const RAGInterface: React.FC = () => {
       search: searchParam,
     });
   }, [location.search]);
-
   useEffect(() => {
     if (activeFeature == "similar") setUploadedFiles([]);
     if (activeFeature == "analyze") return;
@@ -281,29 +284,55 @@ const RAGInterface: React.FC = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex w-full">
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex w-full relative">
         <AppSidebar />
-
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 ">
           {/* Header */}
-          <header className="bg-slate-900/80 backdrop-blur-sm border-b border-slate-700/50 p-3 sm:p-4">
-            <div className="flex items-center justify-between gap-2 sm:gap-3">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <SidebarTrigger className="text-slate-400 hover:text-white hover:bg-black h-8 w-8 sm:h-9 sm:w-9" />
-                <h1 className="text-base sm:text-lg font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent truncate">
-                  LegalAI Assistant, Hey {data.email}
-                </h1>
+          {
+            <header
+              className={`bg-slate-900/80 backdrop-blur-sm border-b border-slate-700/50 p-3 sm:p-4 z-50 `}
+              ref={ref}
+            >
+              <div className="flex items-center justify-between gap-2 sm:gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <SidebarTrigger className="text-slate-400 hover:text-white hover:bg-black h-8 w-8 sm:h-9 sm:w-9" />
+
+                  {
+                    <h1 className="text-base sm:text-lg font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent truncate">
+                      {`LegalAI Assistant, Hey ${data.email}`}
+                    </h1>
+                  }
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/u/settings")}
+                  className="text-slate-400 hover:text-white hover:bg-slate-700/50 h-8 w-8 sm:h-9 sm:w-9 p-0"
+                >
+                  <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+                </Button>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/u/settings")}
-                className="text-slate-400 hover:text-white hover:bg-slate-700/50 h-8 w-8 sm:h-9 sm:w-9 p-0"
-              >
-                <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-            </div>
-          </header>
+            </header>
+          }{" "}
+          {!inView && (
+            <header
+              className={`bg-slate-900/80 backdrop-blur-sm border-b border-slate-700/50 p-3 sm:p-4 z-50 top-0 transition-opacity duration-500 delay-300 ease-out fixed w-full`}
+            >
+              <div className="flex items-center justify-between gap-2 sm:gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <SidebarTrigger className="text-slate-400 hover:text-white hover:bg-black h-8 w-8 sm:h-9 sm:w-9" />
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/u/settings")}
+                  className="text-slate-400 hover:text-white hover:bg-slate-700/50 h-8 w-8 sm:h-9 sm:w-9 p-0"
+                >
+                  <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+                </Button>
+              </div>
+            </header>
+          )}
           {/* Chat Area */}
           <div className="flex-1 flex flex-col min-h-0 relative">
             <ScrollArea className="flex-1">

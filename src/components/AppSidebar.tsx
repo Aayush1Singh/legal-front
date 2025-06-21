@@ -24,6 +24,7 @@ import {
 import { newSession, prevChats } from "@/services/ChatHandler";
 import { useNavigate, useLocation, NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
+import Loader from "./Loader";
 
 interface Response {
   session_id: string;
@@ -41,44 +42,30 @@ interface SessionTemplate {
 const AppSidebar: React.FC = () => {
   // const conversations: conversation[] = [];
   const [conversations, setConversations] = useState<SessionTemplate[]>([]);
-
+  const [loading, setLoader] = useState(false);
   useEffect(() => {
     async function getChats() {
-      const res = await prevChats();
-      console.log(res);
-      setConversations(res.reverse());
+      try {
+        setLoader(true);
+        const res = await prevChats();
+        if (res.status == "success") {
+          setConversations(res.response.reverse());
+        } else {
+          toast.error("Could not load previous sessions");
+          console.log(res);
+        }
+      } catch (err) {
+        toast.error("Internal server error");
+      } finally {
+        setLoader(false); // ② turn it off
+      }
     }
-
     getChats();
+    // setLoader((state) => !state);
   }, []);
 
-  // const conversations = [
-  //   {
-  //     id: 1,
-  //     title: "Document Analysis Q&A",
-  //     time: "2 min ago",
-  //     preview: "Can you explain the main findings...",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Research Paper Review",
-  //     time: "1 hour ago",
-  //     preview: "What are the key methodologies...",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Legal Document Query",
-  //     time: "Yesterday",
-  //     preview: "Please summarize the contract...",
-  //   },
-  // ];
-  const Navigate = useNavigate();
   const location = useLocation();
-  const mainActions = [
-    { icon: Upload, label: "Upload Documents", action: () => {} },
-    { icon: Search, label: "Search Knowledge", action: () => {} },
-    { icon: FileText, label: "Document Library", action: () => {} },
-  ];
+
   const searchParams = new URLSearchParams(location.search);
   const navigate = useNavigate();
   async function createSession() {
@@ -91,6 +78,9 @@ const AppSidebar: React.FC = () => {
       navigate(`?${searchParams.toString()}`);
     }
   }
+  useEffect(() => {
+    console.log("observed change in loading ", loading);
+  }, [loading]);
   return (
     <Sidebar
       style={{
@@ -115,45 +105,53 @@ const AppSidebar: React.FC = () => {
       </SidebarHeader>
 
       <SidebarContent className="bg-slate-900">
-        <SidebarGroup>
+        <SidebarGroup className="h-full">
           <SidebarGroupLabel className="text-slate-400">
             Recent Conversations
           </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="bg-slate-900">
-              {conversations?.map((conv, index) => (
-                <SidebarMenuItem key={index}>
-                  <SidebarMenuButton
-                    className="text-slate-300 hover:text-white hover:bg-black
+          <SidebarGroupContent className="flex-1">
+            <SidebarMenu className="bg-slate-900 h-full">
+              {loading && (
+                <div className="w-full h-full grid align-items-middle justify-items-center ">
+                  <div className=" grid align-items-bottom">
+                    <Loader className="w-10 m-auto"></Loader>
+                  </div>
+                </div>
+              )}
+              {!loading &&
+                conversations?.map((conv, index) => (
+                  <SidebarMenuItem key={index}>
+                    <SidebarMenuButton
+                      className="text-slate-300 hover:text-white hover:bg-black
                      h-auto p-3"
-                    onClick={() => {
-                      const params = new URLSearchParams(location.search);
+                      onClick={() => {
+                        const params = new URLSearchParams(location.search);
 
-                      params.set("session_id", conv.session_id);
-                      navigate(`${location.pathname}?${params.toString()}`, {
-                        replace: true,
-                      });
-                    }}
-                  >
-                    <div className="flex items-start space-x-3 w-full">
-                      <MessageSquare className="w-4 h-4 text-blue-400 mt-1 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">
-                          {conv.title}
+                        params.set("session_id", conv.session_id);
+                        navigate(`${location.pathname}?${params.toString()}`, {
+                          replace: true,
+                        });
+                      }}
+                    >
+                      <div className="flex items-start space-x-3 w-full">
+                        <MessageSquare className="w-4 h-4 text-blue-400 mt-1 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-white truncate">
+                            {conv.title}
 
-                          {/* {conv.title} */}
-                        </p>
-                        <p className="text-xs text-slate-400 truncate mt-1">
-                          {/* {conv.preview} */}
-                        </p>
-                        <p className="text-xs text-slate-500 mt-1">
-                          {/* {conv.time} */}
-                        </p>
+                            {/* {conv.title} */}
+                          </p>
+                          <p className="text-xs text-slate-400 truncate mt-1">
+                            {/* {conv.preview} */}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            {/* {conv.time} */}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

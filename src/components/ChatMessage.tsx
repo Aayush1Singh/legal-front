@@ -101,41 +101,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           </div>
         </div>
 
-        {/* Message Actions */}
-        {!isUser && (
-          <div className="flex items-center gap-1 sm:gap-2 mt-1 sm:mt-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-slate-400 hover:text-white h-6 w-6 sm:h-8 sm:w-8 px-0 sm:px-2"
-            >
-              <Copy className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-slate-400 hover:text-white h-6 w-6 sm:h-8 sm:w-8 px-0 sm:px-2"
-            >
-              <ThumbsUp className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-slate-400 hover:text-white h-6 w-6 sm:h-8 sm:w-8 px-0 sm:px-2"
-            >
-              <ThumbsDown className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-            </Button>
-          </div>
-        )}
-
         {/* User message timestamp */}
         {isUser && (
-          <span className="text-xs text-slate-500 mt-1 sm:mt-2">
-            {/* {message.timestamp.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })} */}
-          </span>
+          <span className="text-xs text-slate-500 mt-1 sm:mt-2"></span>
         )}
       </div>
     </div>
