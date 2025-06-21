@@ -38,11 +38,16 @@ export async function LoginHandler(email, password) {
     password,
     /* your body content here */
   };
-  const response = await axios.post(`${apiUrl}/signin`, body, {
-    // headers: { Authorization: `Bearer ${""}` },
-    withCredentials: true,
-  });
-  return response.data;
+  try {
+    const response = await axios.post(`${apiUrl}/signin`, body, {
+      // headers: { Authorization: `Bearer ${""}` },
+      withCredentials: true,
+    });
+    console.log(response);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
 }
 export async function ResetPasswordHandler(password, new_password) {
   const response = await axios.post(
