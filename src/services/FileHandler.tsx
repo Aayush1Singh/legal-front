@@ -38,7 +38,7 @@ export async function handleFileUploadToDatabase(file: File, session_id) {
       withCredentials: true,
     }
   );
-  return { message: "success" };
+  return { status: "success" };
   console.log(data, error);
   // formData.append("file", file); // 'file' is the field name expected by the backend
   // try {

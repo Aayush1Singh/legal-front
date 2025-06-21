@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { toast } from "react-toastify";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,21 +30,19 @@ import { ResetPasswordHandler } from "@/services/LoginHandler";
 const Settings = () => {
   const { handleSubmit, register, reset } = useForm();
   const navigate = useNavigate();
-  const { toast } = useToast();
   async function onSubmit(data) {
-    console.log(data);
     interface resi {
-      message: string;
-      error?: string;
+      message?: string;
+      status: string;
     }
     const res = (await ResetPasswordHandler(
       data.current_pass,
       data.new_pass
     )) as resi;
-    if (res.message == "success") {
-      toast({ title: "Password Changed Successfully" });
+    if (res.status == "success") {
+      toast.success("Password Changed Successfully");
     } else {
-      toast({ title: "Error", description: res.error });
+      toast.error(res.message);
     }
     reset();
   }

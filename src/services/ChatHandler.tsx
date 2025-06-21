@@ -28,10 +28,10 @@ export async function assistantResponse(query, session_id, isUpload: boolean) {
     },
     withCredentials: true,
   });
-  console.log(response);
   interface Res {
-    response: string;
-    message: string;
+    response?: string;
+    status: string;
+    message?: string;
   }
   const res = response.data as Res;
   console.log(res);
@@ -84,8 +84,9 @@ export async function analyzeFile(session_id) {
     clause: string;
   }
   interface res {
-    response: AnalyzedClauses[];
-    message: string;
+    response?: AnalyzedClauses[];
+    message?: string;
+    status: string;
   }
   const response = await axios.get(`${apiUrl}/session/analyze/${session_id}`, {
     withCredentials: true,
@@ -105,8 +106,9 @@ export async function loadAnalysis(session_id, doc_id) {
     }
   );
   interface res {
-    response: AnalysisClause[];
-    message: string;
+    response?: AnalysisClause[];
+    message?: string;
+    status: string;
   }
   const data = response.data as res;
   return data;

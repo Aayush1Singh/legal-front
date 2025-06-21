@@ -14,10 +14,12 @@ function ProtectedRoute({ children }) {
       const result = await isLoggedIn();
       console.log(result);
       setIsAuthenticated(
-        (result as { message?: string }).message === "success"
+        (result as { message?: string; status?: string }).status === "success"
       );
       console.log(result);
-      if ((result as { message?: string }).message === "success") {
+      if (
+        (result as { message?: string; status?: string }).status === "success"
+      ) {
         console.log(result.decoded.email);
         dispatch(LogIn(result.decoded.email));
       } else {

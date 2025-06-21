@@ -1,12 +1,9 @@
-
-import RAGInterface from '@/components/RAGInterface';
-import { Toaster } from '@/components/ui/sonner';
+import RAGInterface from "@/components/RAGInterface";
 
 const Index = () => {
   return (
     <>
       <RAGInterface />
-      <Toaster />
     </>
   );
 };

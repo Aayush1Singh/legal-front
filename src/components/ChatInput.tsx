@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { UploadedFile } from "./RAGInterface";
 import { useLocation, useNavigate } from "react-router-dom";
 import { newSession } from "@/services/ChatHandler";
+import { toast } from "react-toastify";
 
 interface ChatInputProps {
   onSendMessage: (session_id: string, message: string) => void;
@@ -40,7 +41,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 }) => {
   const [message, setMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
+  // const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,12 +53,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
       async function createSession() {
         interface Response {
           session_id: string;
+          message?: string;
+          status: string;
         }
         const response = (await newSession()) as Response;
-        console.log(response);
-        params.set("session_id", response.session_id);
-        navigate(`?${params.toString()}`);
-        session_id = response.session_id;
+        if (response.status == "failed") {
+          toast.error(response.message);
+        } else {
+          console.log(response);
+          params.set("session_id", response.session_id);
+          navigate(`?${params.toString()}`);
+          session_id = response.session_id;
+        }
       }
       await createSession();
       setFlagAbruptNew(true);
@@ -88,16 +95,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (file) {
       if (file.type === "application/pdf") {
         onFileUpload?.(file);
-        // toast({
-        //   title: "File uploaded successfully",
-        //   description: `${file.name} has been uploaded and is ready for analysis.`,
-        // });
       } else {
-        toast({
-          title: "Invalid file type",
-          description: "Please upload a PDF file only.",
-          variant: "destructive",
-        });
+        toast.error("Invalid File Type");
       }
     }
     // Reset file input
@@ -149,7 +148,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 <h3 className="text-xs font-medium text-slate-300 mb-2">
                   Documents
                 </h3>
-                <div className="flex flex-wrap gap-1.5">
+                <div className={`flex flex-wrap gap-1.5 `}>
                   {uploadedFiles.map((file, index) => (
                     <div
                       key={index}
@@ -167,6 +166,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                       <Button
                         variant="ghost"
                         size="sm"
+                        disabled={disabled ? true : false}
                         onClick={() => handleRemoveFile(file.name)}
                         className="text-slate-400 hover:text-red-400 h-4 w-4 p-0 flex-shrink-0"
                       >
@@ -193,7 +193,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           </div>
 
           {/* Voice Input Button */}
-          <Button
+          {/* <Button
             type="button"
             variant="ghost"
             size="sm"
@@ -201,7 +201,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             className="text-slate-400 hover:text-white p-1.5 sm:p-2 flex-shrink-0 hover:bg-black h-8 w-8 sm:h-9 sm:w-9"
           >
             <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
-          </Button>
+          </Button> */}
 
           {/* Send Button */}
           <Button

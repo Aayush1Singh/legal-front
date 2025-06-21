@@ -7,67 +7,46 @@ import { Label } from "@/components/ui/label";
 import { useForm, Resolver } from "react-hook-form";
 import { SignupHandler } from "@/services/LoginHandler";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "react-toastify";
+import Loader from "@/components/Loader";
 type FormValues = {
   fullName: string;
   password: string;
   email: string;
   confirm_email: string;
 };
-
-const resolver: Resolver<FormValues> = async (values) => {
-  return {
-    values: values.fullName ? values : {},
-    errors: !values.fullName
-      ? {
-          fullName: {
-            type: "required",
-            message: "This is required.",
-          },
-        }
-      : {},
-  };
-};
-
-interface Response {
+interface Response<T = unknown> {
   message: string;
+  status: string;
+  response?: T;
 }
 const Signup: React.FC = () => {
-  const { toast } = useToast();
+  const [loading, setLoader] = useState(false);
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({ resolver });
+  } = useForm<FormValues>();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
   async function onSubmit(data) {
-    console.log(data);
-    const { fullName, email, password } = data;
-    const response = (await SignupHandler(
-      email,
-      password,
-      fullName
-    )) as Response;
-
-    console.log(response);
-    if (response.message === "success") {
-      toast({ title: "success" });
-      navigate("/u");
-    } else toast({ title: "failed" });
+    setLoader(true);
+    try {
+      const { fullName, email, password } = data;
+      const response = (await SignupHandler(
+        email,
+        password,
+        fullName
+      )) as Response;
+      if (response.status === "success") {
+        toast.success("Logged In!");
+        navigate("/u");
+      } else toast.error(response.message);
+    } catch (err) {
+      toast.error(err);
+    }
+    setLoader(false);
   }
-
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   // Handle signup logic here
-  //   console.log("Signup attempt:", formData);
-  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
@@ -106,15 +85,14 @@ const Signup: React.FC = () => {
 
             <div className="space-y-2">
               <Label htmlFor="email" className="text-slate-300">
-                Email
+                Email / UserName
               </Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <Input
                   id="email"
                   name="email"
-                  type="email"
-                  placeholder="Enter your email"
+                  placeholder="Enter your email / username"
                   {...register("email")}
                   className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                   required
@@ -161,9 +139,10 @@ const Signup: React.FC = () => {
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl"
+              disabled={loading}
             >
-              Create Account
-              <ArrowRight className="w-4 h-4 ml-2" />
+              {!loading ? "Create Account" : <Loader className="w-7" />}
+              {!loading && <ArrowRight className="w-4 h-4 ml-2" />}
             </Button>
           </form>
 

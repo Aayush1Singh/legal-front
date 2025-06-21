@@ -4,65 +4,55 @@ import { Brain, Mail, Lock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useForm, Resolver } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { LoginHandler } from "@/services/LoginHandler";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "react-toastify";
+import Loader from "@/components/Loader";
 type FormValues = {
   fullName: string;
   password: string;
   email: string;
   confirm_email: string;
 };
-const resolver: Resolver<FormValues> = async (values) => {
-  return {
-    values: values.email ? values : {},
-    errors: !values.email
-      ? {
-          email: {
-            type: "required",
-            message: "This is required.",
-          },
-        }
-      : {},
-  };
-};
+
 interface Response {
   message: string;
+  status?: string;
 }
 const Login: React.FC = () => {
-  const { toast } = useToast();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [loading, setLoader] = useState(false);
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({ resolver });
+  } = useForm<FormValues>();
+
   async function onSubmit(data) {
-    const { email, password } = data;
-    const response = (await LoginHandler(email, password)) as Response;
-    if (response.message === "success") {
-      toast({ title: "successfully logined" });
-      navigate("/u");
-    } else {
-      toast({ title: "failed login" });
+    setLoader(true);
+    try {
+      const { email, password } = data;
+      const response = (await LoginHandler(email, password)) as Response;
+      if (response.status == "success") {
+        toast.success("Logged In!");
+        navigate("/u");
+      } else {
+        toast.error(response.message);
+      }
+    } catch (err) {
+      console.log("er");
+      toast.error(err);
     }
-    console.log(data);
+    setLoader(false);
   }
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   // Handle login logic here
-  //   console.log("Login attempt:", { email, password });
-  // };
 
   return (
     <div className=" relative min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
       <div className="absolute bg-white top-0 left-0">
         <h3>Test Credentials</h3>
         <p>email: hello@gmail.com</p>
-        <p>passwrod: helloitsme</p>
+
+        <p>password: helloitsme</p>
       </div>
 
       <div className="w-full max-w-md">
@@ -90,7 +80,6 @@ const Login: React.FC = () => {
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <Input
                   id="email"
-                  type="email"
                   placeholder="Enter your email"
                   {...register("email")}
                   className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
@@ -127,10 +116,11 @@ const Login: React.FC = () => {
 
             <Button
               type="submit"
+              disabled={loading}
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl"
             >
-              Sign In
-              <ArrowRight className="w-4 h-4 ml-2" />
+              {!loading ? "Sign In" : <Loader className="w-7"></Loader>}
+              {!loading && <ArrowRight className="w-4 h-4 ml-2" />}
             </Button>
           </form>
 

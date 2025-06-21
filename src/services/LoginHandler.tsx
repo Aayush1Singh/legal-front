@@ -20,13 +20,6 @@ export async function SignupHandler(email, password, username) {
     withCredentials: true,
   });
 
-  // To include credentials (cookies, authorization headers, etc.) in the request,
-  // set the 'withCredentials' option in the axios request config:
-  // Example:
-  // const response = await axios.post("http://127.0.0.1:8000/signup", body, {
-  //   headers: { Authorization: `Bearer ${""}` },
-  //   withCredentials: true
-  // });
   return response.data;
 }
 export async function isLoggedIn() {

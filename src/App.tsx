@@ -11,11 +11,23 @@ import NotFound from "./pages/NotFound";
 import Settings from "./pages/Settings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Analytics } from "@vercel/analytics/react";
+import { ToastContainer, toast } from "react-toastify";
 const queryClient = new QueryClient();
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        theme="light"
+        stacked
+      />{" "}
       <Toaster />
       <Sonner />
       <Analytics />

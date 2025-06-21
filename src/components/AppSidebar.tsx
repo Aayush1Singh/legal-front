@@ -23,9 +23,12 @@ import {
 } from "@/components/ui/sidebar";
 import { newSession, prevChats } from "@/services/ChatHandler";
 import { useNavigate, useLocation, NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface Response {
   session_id: string;
+  message?: string;
+  status?: string;
 }
 interface conversation {
   session_id: string;
@@ -80,9 +83,13 @@ const AppSidebar: React.FC = () => {
   const navigate = useNavigate();
   async function createSession() {
     const response = (await newSession()) as Response;
-    console.log(response);
-    searchParams.set("session_id", response.session_id);
-    navigate(`?${searchParams.toString()}`);
+    if (response.status == "failed") {
+      toast.error(response.message);
+    } else {
+      console.log(response);
+      searchParams.set("session_id", response.session_id);
+      navigate(`?${searchParams.toString()}`);
+    }
   }
   return (
     <Sidebar

@@ -22,6 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import AnalysisDisplay, { AnalysisClause } from "./AnalysisDisplay";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 interface Message {
   query: string;
   response?: string;
@@ -39,8 +40,6 @@ export interface UploadedFile {
 
 const RAGInterface: React.FC = () => {
   const data = useSelector((state) => state.user);
-  console.log(data);
-  const { toast } = useToast();
   const [flagAbrupt, setFlagAbruptNew] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -54,7 +53,10 @@ const RAGInterface: React.FC = () => {
     AnalysisClause[] | null
   >(null);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
-
+  const [flag, setFlag] = useState(false);
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const navigate = useNavigate();
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -62,62 +64,37 @@ const RAGInterface: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-
-  const navigate = useNavigate();
-  const [flag, setFlag] = useState(false);
 
   const handleSendMessage = async (session_id, content: string) => {
-    console.log("content", content);
-    const userMessage: Message = {
-      query: content,
-      isUpload: uploadedFiles.length > 0,
-    };
-    setMessages((prev) => [...prev, userMessage]);
-    setUploadedFiles([]);
     setIsTyping(true);
-    const searchParams = new URLSearchParams(location.search);
-    // console.log(query);
-    interface Response {
-      session_id: string;
-    }
-    // let temp = "";
-
-    // async function createSession() {
-    //   const response = (await newSession()) as Response;
-    //   console.log(response);
-    //   searchParams.set("session_id", response.session_id);
-    //   temp = response.session_id;
-    //   setFlag(true);
-    //   navigate(`?${searchParams.toString()}`);
-    // }
-
-    // if (params.get("session_id") == null) {
-    //   await createSession();
-    //   setMessages([{ query: content }]);
-    // }
-    console.log(params);
-
-    const response = await assistantResponse(
-      content,
-      session_id,
-      uploadedFiles.length > 0
-    );
-    if (response.message == "failed") toast({ title: "failed" });
-    setIsTyping(false);
-    console.log(response);
-    setMessages((messages: Message[]) => {
-      // Ensure response is a string
-      // Create a new array with the last message's response updated
-
-      return messages.map((msg, idx) =>
-        idx === messages.length - 1
-          ? { ...msg, response: response.response }
-          : msg
+    try {
+      const userMessage: Message = {
+        query: content,
+        isUpload: uploadedFiles.length > 0,
+      };
+      setMessages((prev) => [...prev, userMessage]);
+      setUploadedFiles([]);
+      const response = await assistantResponse(
+        content,
+        session_id,
+        uploadedFiles.length > 0
       );
-    });
-    // Simulate AI response based on active feature
+      if (response.status == "failed") {
+        toast.error(response.message);
+      } else {
+        setMessages((messages: Message[]) => {
+          return messages.map((msg, idx) =>
+            idx === messages.length - 1
+              ? { ...msg, response: response.response }
+              : msg
+          );
+        });
+      }
+    } catch (err) {
+      toast.error(err);
+      console.log("hello");
+    }
+    setIsTyping(false);
   };
 
   interface queryFile {
@@ -127,64 +104,43 @@ const RAGInterface: React.FC = () => {
 
   const handleFileUpload = async (file: File) => {
     setUploading(true);
-    console.log("Uploaded file:", file.name);
-    // Add the file to the uploaded files list
-    const newFile: UploadedFile = {
-      name: file.name,
-      size: file.size,
-      uploadedAt: new Date(),
-      file,
-    };
-    setUploadedFiles((prev) => [...prev, newFile]);
-    let session_id = params.get("session_id");
-    if (session_id == null) {
-      console.log("jojojoijo", session_id, params, location);
-      async function createSession() {
-        interface Response {
-          session_id: string;
+
+    try {
+      const newFile: UploadedFile = {
+        name: file.name,
+        size: file.size,
+        uploadedAt: new Date(),
+        file,
+      };
+      setUploadedFiles((prev) => [...prev, newFile]);
+      let session_id = params.get("session_id");
+      if (session_id == null) {
+        async function createSession() {
+          interface Response {
+            session_id: string;
+          }
+          const response = (await newSession()) as Response;
+          console.log(response);
+          params.set("session_id", response.session_id);
+          navigate(`?${params.toString()}`);
+          session_id = response.session_id;
         }
-        const response = (await newSession()) as Response;
-        console.log(response);
-        params.set("session_id", response.session_id);
-        navigate(`?${params.toString()}`);
-        session_id = response.session_id;
+        await createSession();
       }
-      await createSession();
-    }
 
-    const res = await handleFileUploadToDatabase(file, session_id);
+      const res = await handleFileUploadToDatabase(file, session_id);
+      if (res.status == "failed") toast.error("File could not be uploaded");
+      else {
+        toast.success("file uploaded");
+      }
+    } catch (err) {
+      toast.error(err);
+    }
     setUploading(false);
-    if (res.message == "failed") toast({ title: "failed" });
-    else {
-      toast({
-        title: "File uploaded To DB",
-        description: `${file.name} has been uploaded and is ready for analysis.`,
-      });
-    }
   };
-
-  async function onSendFile() {
-    const session_id = params.get("session_id");
-    const query: queryFile[] = uploadedFiles.map((file) => {
-      handleFileUploadToDatabase(file.file, session_id);
-      return { name: file.name, size: String(file.size) } as queryFile;
-    });
-
-    console.log(query);
-
-    setUploadedFiles([]);
-  }
 
   const handleRemoveFile = (fileName: string) => {
     setUploadedFiles((prev) => prev.filter((file) => file.name !== fileName));
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const featureButtons = [
@@ -207,13 +163,19 @@ const RAGInterface: React.FC = () => {
       return;
     }
     async function getMessages() {
-      const res = (await getChat(searchParam)) as Recipi;
-      if (res == null) return;
-      // if (res.response.length == 0) return;
-      setMessages(res.response);
+      try {
+        const res = (await getChat(searchParam)) as Recipi;
+        if (res.status == "failed") {
+          toast.error(res.message);
+          setMessages([]);
+        } else {
+          setMessages(res.response);
+        }
+      } catch (err) {
+        toast.error(err);
+      }
     }
     getMessages();
-
     console.log("Query params changed:", {
       search: searchParam,
     });
@@ -225,79 +187,96 @@ const RAGInterface: React.FC = () => {
   }, [activeFeature]);
 
   const onSearchSimilar = async function (session_id, content: string) {
-    const userMessage: Message = {
-      query: content,
-    };
-    interface Res {
-      response: string;
-      message: string;
-    }
-    setMessages((prev) => [...prev, userMessage]);
-    // const session_id = params.get("session_id");
     setIsTyping(true);
-    const response = (await similarSearch(content, session_id)) as Res;
+
+    try {
+      const userMessage: Message = {
+        query: content,
+      };
+      interface Res {
+        response?: string;
+        message?: string;
+        status: string;
+      }
+      setMessages((prev) => [...prev, userMessage]);
+      const response = (await similarSearch(content, session_id)) as Res;
+      if (response.status == "failed") {
+        toast.error(response.message);
+      } else {
+        setMessages((messages: Message[]) => {
+          return messages.map((msg, idx) =>
+            idx === messages.length - 1
+              ? { ...msg, response: response.response }
+              : msg
+          );
+        });
+      }
+    } catch (err) {
+      toast.error(err);
+    }
     setIsTyping(false);
-
-    console.log(response);
-
-    setMessages((messages: Message[]) => {
-      // Ensure response is a string
-      // Create a new array with the last message's response updated
-
-      return messages.map((msg, idx) =>
-        idx === messages.length - 1
-          ? { ...msg, response: response.response }
-          : msg
-      );
-    });
   };
 
   const query = new URLSearchParams(location.search);
   interface Recipi {
-    response: Message[];
+    response?: Message[];
+    status: string;
+    message?: string;
   }
 
   async function onAnalyzeFile(session_id) {
-    const userMessage: Message = {
-      query: "Used analyzed document",
-      isUpload: true,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setUploadedFiles([]);
-
     setIsTyping(true);
-    const res = await analyzeFile(session_id);
+    try {
+      const userMessage: Message = {
+        query: "Used analyzed document",
+        isUpload: true,
+      };
+      setMessages((prev) => [...prev, userMessage]);
+      setUploadedFiles([]);
+      const res = await analyzeFile(session_id);
+      if (res.status == "failed") {
+        toast.error(res.message);
+      } else {
+        const clauses_array = res.response;
+        setAnalysisResults(clauses_array);
+        setShowAnalysisModal(true);
+        const totalClauses = clauses_array.length;
+        const highBiasClauses = clauses_array.filter(
+          (clause) => clause.bias_score >= 0.6
+        ).length;
+        setMessages((prev) => {
+          const lastMessage = prev[prev.length - 1];
+          return [
+            ...prev.slice(0, -1),
+            {
+              ...lastMessage,
+              response: `Analysis complete. Found ${totalClauses} clauses, with ${highBiasClauses} clauses showing high bias scores. See the detailed analysis report for more information.`,
+              analysedDoc: true,
+            },
+          ];
+        });
+      }
+    } catch (err) {
+      console.log("err");
+      toast.error(err);
+    }
     setIsTyping(false);
-
-    // Handle the analysis results
-    const clauses_array = res.response;
-    setAnalysisResults(clauses_array);
-    setShowAnalysisModal(true);
-
-    // Add response message with a summary
-    const totalClauses = clauses_array.length;
-    const highBiasClauses = clauses_array.filter(
-      (clause) => clause.bias_score >= 0.6
-    ).length;
-
-    setMessages((prev) => {
-      const lastMessage = prev[prev.length - 1];
-      return [
-        ...prev.slice(0, -1),
-        {
-          ...lastMessage,
-          response: `Analysis complete. Found ${totalClauses} clauses, with ${highBiasClauses} clauses showing high bias scores. See the detailed analysis report for more information.`,
-          analysedDoc: true,
-        },
-      ];
-    });
   }
+
   async function reSeeAnalysis(doc_id) {
-    const session_id = params.get("session_id");
-    const data = await loadAnalysis(session_id, doc_id);
-    setAnalysisResults(data.response);
-    setShowAnalysisModal(true);
+    try {
+      const session_id = params.get("session_id");
+      const data = await loadAnalysis(session_id, doc_id);
+      if (data.status == "failed") {
+        toast.error(data.message);
+      } else {
+        setAnalysisResults(data.response);
+        setShowAnalysisModal(true);
+      }
+    } catch (err) {
+      console.log("he");
+      toast.error(err);
+    }
   }
 
   return (
@@ -312,7 +291,7 @@ const RAGInterface: React.FC = () => {
               <div className="flex items-center gap-2 sm:gap-3">
                 <SidebarTrigger className="text-slate-400 hover:text-white hover:bg-black h-8 w-8 sm:h-9 sm:w-9" />
                 <h1 className="text-base sm:text-lg font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent truncate">
-                  LegalAI Assistant
+                  LegalAI Assistant, Hey {data.email}
                 </h1>
               </div>
               <Button
