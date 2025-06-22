@@ -275,7 +275,7 @@ const Home: React.FC = () => {
               </p>
               <Button
                 size="lg"
-                onClick={() => navigate("/u")}
+                onClick={() => navigate("/signup")}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 text-lg px-8 py-6 h-auto"
               >
                 Start Your Journey
