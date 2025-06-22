@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { FileText, Gavel, Search, X, Settings } from "lucide-react";
+import { FileText, Gavel, Search, X, Settings, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
 import ChatMessage from "./ChatMessage";
@@ -19,11 +19,11 @@ import {
   similarSearch,
 } from "@/services/ChatHandler";
 import { handleFileUploadToDatabase } from "@/services/FileHandler";
-import { useToast } from "@/hooks/use-toast";
 import AnalysisDisplay, { AnalysisClause } from "./AnalysisDisplay";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { logOut } from "@/services/LoginHandler";
 interface Message {
   query: string;
   response?: string;
@@ -311,10 +311,14 @@ const RAGInterface: React.FC = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate("/u/settings")}
+                  onClick={async () => {
+                    logOut();
+                    navigate("/");
+                    toast.success("Successfully logout");
+                  }}
                   className="text-slate-400 hover:text-white hover:bg-slate-700/50 h-8 w-8 sm:h-9 sm:w-9 p-0"
                 >
-                  <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </div>
             </header>
@@ -333,7 +337,7 @@ const RAGInterface: React.FC = () => {
                   onClick={() => navigate("/u/settings")}
                   className="text-slate-400 hover:text-white hover:bg-slate-700/50 h-8 w-8 sm:h-9 sm:w-9 p-0"
                 >
-                  <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </div>
             </header>

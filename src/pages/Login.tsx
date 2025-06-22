@@ -56,12 +56,12 @@ const Login: React.FC = () => {
         canonical="https://kanun-legalai.vercel.app/login"
       />
       <div className=" relative min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
-        <div className="absolute bg-white top-0 left-0">
+        {/* <div className="absolute bg-white top-0 left-0">
           <h3>Test Credentials</h3>
           <p>email: hello@gmail.com</p>
 
           <p>password: helloitsme</p>
-        </div>
+        </div> */}
 
         <div className="w-full max-w-md">
           {/* Logo */}

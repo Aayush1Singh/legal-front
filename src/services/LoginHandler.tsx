@@ -63,3 +63,11 @@ export async function ResetPasswordHandler(password, new_password) {
   );
   return response.data;
 }
+export async function logOut() {
+  const response = await axios.post(`${apiUrl}/logout`, {
+    // headers: { Authorization: `Bearer ${""}` },
+    withCredentials: true,
+  });
+
+  return response.data;
+}
