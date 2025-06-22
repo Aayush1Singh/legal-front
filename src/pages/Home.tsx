@@ -1,4 +1,3 @@
-
 import React, { lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,16 +13,19 @@ import { useNavigate } from "react-router-dom";
 import Seo from "@/components/Seo";
 
 // Lazy load images for better performance
-const LazyImage = lazy(() => Promise.resolve({
-  default: ({ src, alt, className }: { src: string; alt: string; className?: string }) => (
-    <img 
-      src={src} 
-      alt={alt} 
-      className={className}
-      loading="lazy"
-    />
-  )
-}));
+const LazyImage = lazy(() =>
+  Promise.resolve({
+    default: ({
+      src,
+      alt,
+      className,
+    }: {
+      src: string;
+      alt: string;
+      className?: string;
+    }) => <img src={src} alt={alt} className={className} loading="lazy" />,
+  })
+);
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -34,30 +36,36 @@ const Home: React.FC = () => {
       title: "AI-Powered Analysis",
       description:
         "Advanced AI understands and analyzes your documents with unprecedented accuracy",
-      image: "/png-1.png",
-      gradient: "from-blue-500 to-cyan-500"
+      image:
+        "https://saafeyieyetpliamgabp.supabase.co/storage/v1/object/public/file-storage/landing-images/png-1.jpg",
+      gradient: "from-blue-500 to-cyan-500",
     },
     {
       icon: MessageSquare,
       title: "Context-Aware Assistant",
-      description: "Smart assistant that remembers previous queries and provides contextual responses",
-      image: "/png-2.png",
-      gradient: "from-purple-500 to-pink-500"
+      description:
+        "Smart assistant that remembers previous queries and provides contextual responses",
+      image:
+        "https://saafeyieyetpliamgabp.supabase.co/storage/v1/object/public/file-storage/landing-images/png-2.jpg",
+      gradient: "from-purple-500 to-pink-500",
     },
     {
       icon: FileText,
       title: "Document Analysis Report",
       description:
         "Get comprehensive insights and detailed analysis reports of your legal documents",
-      image: "/png-3.png",
-      gradient: "from-green-500 to-emerald-500"
+      image:
+        "https://saafeyieyetpliamgabp.supabase.co/storage/v1/object/public/file-storage/landing-images/png-3.jpg",
+      gradient: "from-green-500 to-emerald-500",
     },
     {
       icon: Search,
       title: "Similar Case Search",
-      description: "Finds Similar Cases and relevant legal precedents instantly",
-      image: "/png-4.png",
-      gradient: "from-orange-500 to-red-500"
+      description:
+        "Finds Similar Cases and relevant legal precedents instantly",
+      image:
+        "https://saafeyieyetpliamgabp.supabase.co/storage/v1/object/public/file-storage/landing-images/png-4.jpg",
+      gradient: "from-orange-500 to-red-500",
     },
   ];
 
@@ -194,13 +202,21 @@ const Home: React.FC = () => {
                   className="group relative overflow-hidden bg-slate-800/30 border border-slate-700/50 rounded-2xl backdrop-blur-sm hover:bg-slate-800/50 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl"
                 >
                   {/* Gradient overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-500`} />
-                  
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-500`}
+                  />
+
                   <div className="relative p-8">
-                    <div className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-8 items-center`}>
+                    <div
+                      className={`flex flex-col ${
+                        index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
+                      } gap-8 items-center`}
+                    >
                       {/* Content */}
                       <div className="flex-1 text-center lg:text-left">
-                        <div className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mb-6 mx-auto lg:mx-0 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                        <div
+                          className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mb-6 mx-auto lg:mx-0 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
+                        >
                           <feature.icon className="w-8 h-8 text-white" />
                         </div>
                         <h3 className="text-2xl font-bold text-white mb-4 group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
@@ -210,17 +226,21 @@ const Home: React.FC = () => {
                           {feature.description}
                         </p>
                       </div>
-                      
+
                       {/* Image - Made much larger */}
                       <div className="flex-1 w-full max-w-2xl">
                         <div className="relative group/image">
-                          <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} rounded-xl opacity-20 group-hover/image:opacity-30 transition-opacity duration-300`} />
+                          <div
+                            className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} rounded-xl opacity-20 group-hover/image:opacity-30 transition-opacity duration-300`}
+                          />
                           <div className="relative overflow-hidden rounded-xl border border-slate-600/50 group-hover/image:border-slate-500/70 transition-colors duration-300">
-                            <Suspense fallback={
-                              <div className="w-full h-80 md:h-96 bg-slate-700/50 animate-pulse rounded-xl flex items-center justify-center">
-                                <div className="w-8 h-8 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
-                              </div>
-                            }>
+                            <Suspense
+                              fallback={
+                                <div className="w-full h-80 md:h-96 bg-slate-700/50 animate-pulse rounded-xl flex items-center justify-center">
+                                  <div className="w-8 h-8 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+                                </div>
+                              }
+                            >
                               <LazyImage
                                 src={feature.image}
                                 alt={feature.title}
@@ -229,7 +249,9 @@ const Home: React.FC = () => {
                             </Suspense>
                           </div>
                           {/* Glow effect */}
-                          <div className={`absolute -inset-1 bg-gradient-to-r ${feature.gradient} rounded-xl opacity-0 group-hover/image:opacity-20 blur transition-opacity duration-300 -z-10`} />
+                          <div
+                            className={`absolute -inset-1 bg-gradient-to-r ${feature.gradient} rounded-xl opacity-0 group-hover/image:opacity-20 blur transition-opacity duration-300 -z-10`}
+                          />
                         </div>
                       </div>
                     </div>
