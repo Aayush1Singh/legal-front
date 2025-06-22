@@ -9,7 +9,7 @@ export async function newSession() {
     {},
     { withCredentials: true }
   );
-  if (response.statusText !== "OK") {
+  if (response.status !== 200) {
     toast.error("Internal Server Error");
   }
   return response.data;
@@ -21,7 +21,7 @@ export async function getChat(session_id) {
 
     { withCredentials: true }
   );
-  if (response.statusText !== "OK") {
+  if (response.status !== 200) {
     toast.error("Internal Server Error");
   }
   return response.data;
@@ -35,7 +35,7 @@ export async function assistantResponse(query, session_id, isUpload: boolean) {
     },
     withCredentials: true,
   });
-  if (response.statusText !== "OK") {
+  if (response.status !== 200) {
     toast.error("Internal Server Error");
   }
   interface Res {
@@ -62,7 +62,7 @@ export async function prevChats() {
   const response = await axios.get(`${apiUrl}/get_all_sessions`, {
     withCredentials: true,
   });
-  if (response.statusText !== "OK") {
+  if (response.status !== 200) {
     toast.error("Internal Server Error");
   }
   interface Resi {
@@ -84,7 +84,7 @@ export async function similarSearch(query, session_id) {
       withCredentials: true,
     }
   );
-  if (response.statusText !== "OK") {
+  if (response.status !== 200) {
     toast.error("Internal Server Error");
   }
 
@@ -109,7 +109,7 @@ export async function analyzeFile(session_id) {
   const response = await axios.get(`${apiUrl}/session/analyze/${session_id}`, {
     withCredentials: true,
   });
-  if (response.statusText !== "OK") {
+  if (response.status !== 200) {
     toast.error("Internal Server Error");
   }
   const data = response.data as res;
@@ -125,7 +125,7 @@ export async function loadAnalysis(session_id, doc_id) {
       withCredentials: true,
     }
   );
-  if (response.statusText !== "OK") {
+  if (response.status !== 200) {
     toast.error("Internal Server Error");
   }
   interface res {
