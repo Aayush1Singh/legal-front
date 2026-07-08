@@ -82,7 +82,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
     console.log(message);
   };
-
+// to handle the case when user presses enter to send message
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -117,6 +117,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         <div className="relative flex items-end gap-2 p-2 sm:p-3 bg-slate-800/50 border border-slate-700/50 rounded-xl sm:rounded-2xl backdrop-blur-sm">
           {/* Hidden file input */}
           <input
+          // fileInput ref allow to programmaticlly click this input for upload when we click the paperclip button just below
             ref={fileInputRef}
             type="file"
             accept=".pdf"
@@ -191,7 +192,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             <Textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={handleKeyDown}
+              onKeyDown={handleKeyDown} // handle enter key to send message
               placeholder="Ask anything about your documents..."
               disabled={activeFeature == "analyze" || disabled}
               className="resize-none border-0 bg-transparent text-white placeholder-slate-400 focus:ring-0 focus:ring-offset-0 p-0 text-sm sm:text-lg leading-5 sm:leading-6 h-full min-h-[32px] max-h-[120px]"

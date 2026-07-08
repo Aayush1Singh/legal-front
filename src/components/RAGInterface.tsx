@@ -46,21 +46,25 @@ interface RootState {
 
 const RAGInterface: React.FC = () => {
   const data = useSelector((state: RootState) => state.user);
+
   const { ref, inView, entry } = useInView({
     threshold: 0,
   });
+  // used to solve the issue that suppose user first does not create a session and sends message, for that we create new session
+  // (see the chatinput), now this will change the url param and this will cause refetch of messages, but we just now sent a message!
+  // so it will cause loss of the message just sent, 
+  // so basically a frontend knows that it has created a session just now no need to fetch a history as there is none
   const [flagAbrupt, setFlagAbruptNew] = useState(false);
+
+  
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [isUploading, setUploading] = useState(false);
-  const [activeFeature, setActiveFeature] = useState<
-    "similar" | "analyze" | "resolve"
-  >("resolve");
+  const [activeFeature, setActiveFeature] = useState<"similar" | "analyze" | "resolve">("resolve");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [analysisResults, setAnalysisResults] = useState<
-    AnalysisClause[] | null
-  >(null);
+  const [analysisResults, setAnalysisResults] = useState<AnalysisClause[] | null>(null);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const [flag, setFlag] = useState(false);
   const location = useLocation();
@@ -147,7 +151,7 @@ const RAGInterface: React.FC = () => {
     }
     setUploading(false);
   };
-
+// only decorative change the uplaoded file is not deleted
   const handleRemoveFile = (fileName: string) => {
     setUploadedFiles((prev) => prev.filter((file) => file.name !== fileName));
   };
@@ -291,6 +295,7 @@ const RAGInterface: React.FC = () => {
     <SidebarProvider>
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex w-full relative">
         <AppSidebar />
+
         <div className="flex-1 flex flex-col min-w-0 ">
           {/* Header */}
           {
@@ -342,6 +347,7 @@ const RAGInterface: React.FC = () => {
               </div>
             </header>
           )}
+
           {/* Chat Area */}
           <div className="flex-1 flex flex-col min-h-0 relative">
             <ScrollArea className="flex-1">

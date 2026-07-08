@@ -36,11 +36,13 @@ export async function LoginHandler(email, password) {
   const body = {
     email,
     password,
-    /* your body content here */
   };
   try {
+    console.log("jl");
+    console.log(apiUrl);
     const response = await axios.post(`${apiUrl}/signin`, body, {
       // headers: { Authorization: `Bearer ${""}` },
+
       withCredentials: true,
     });
     console.log(response);

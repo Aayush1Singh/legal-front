@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   MessageSquare,
   Plus,
-  Upload,
-  Search,
   Settings,
-  FileText,
-  History,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {

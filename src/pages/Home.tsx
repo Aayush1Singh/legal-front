@@ -15,11 +15,7 @@ import Seo from "@/components/Seo";
 // Lazy load images for better performance
 const LazyImage = lazy(() =>
   Promise.resolve({
-    default: ({
-      src,
-      alt,
-      className,
-    }: {
+    default: ({src,alt,className,}: {
       src: string;
       alt: string;
       className?: string;
@@ -37,7 +33,8 @@ const Home: React.FC = () => {
       description:
         "Advanced AI understands and analyzes your documents with unprecedented accuracy",
       image:
-        "https://saafeyieyetpliamgabp.supabase.co/storage/v1/object/public/file-storage/landing-images/png-1.jpg",
+      "https://ytytiknoxyyefeyryuyi.supabase.co/storage/v1/object/public/file-storage/landing-images/png-1.jpg",
+        // "https://saafeyieyetpliamgabp.supabase.co/storage/v1/object/public/file-storage/landing-images/png-1.jpg",
       gradient: "from-blue-500 to-cyan-500",
     },
     {
@@ -46,7 +43,8 @@ const Home: React.FC = () => {
       description:
         "Smart assistant that remembers previous queries and provides contextual responses",
       image:
-        "https://saafeyieyetpliamgabp.supabase.co/storage/v1/object/public/file-storage/landing-images/png-2.jpg",
+      "https://ytytiknoxyyefeyryuyi.supabase.co/storage/v1/object/public/file-storage/landing-images/png-2.jpg",
+        // "https://saafeyieyetpliamgabp.supabase.co/storage/v1/object/public/file-storage/landing-images/png-2.jpg",
       gradient: "from-purple-500 to-pink-500",
     },
     {
@@ -55,7 +53,8 @@ const Home: React.FC = () => {
       description:
         "Get comprehensive insights and detailed analysis reports of your legal documents",
       image:
-        "https://saafeyieyetpliamgabp.supabase.co/storage/v1/object/public/file-storage/landing-images/png-3.jpg",
+      "https://ytytiknoxyyefeyryuyi.supabase.co/storage/v1/object/public/file-storage/landing-images/png-3.jpg",
+        // "https://saafeyieyetpliamgabp.supabase.co/storage/v1/object/public/file-storage/landing-images/png-3.jpg",
       gradient: "from-green-500 to-emerald-500",
     },
     {
@@ -64,7 +63,8 @@ const Home: React.FC = () => {
       description:
         "Finds Similar Cases and relevant legal precedents instantly",
       image:
-        "https://saafeyieyetpliamgabp.supabase.co/storage/v1/object/public/file-storage/landing-images/png-4.jpg",
+      "https://ytytiknoxyyefeyryuyi.supabase.co/storage/v1/object/public/file-storage/landing-images/png-4.jpg",
+        // "https://saafeyieyetpliamgabp.supabase.co/storage/v1/object/public/file-storage/landing-images/png-4.jpg",
       gradient: "from-orange-500 to-red-500",
     },
   ];
@@ -297,7 +297,7 @@ const Home: React.FC = () => {
               </span>
             </div>
             <p className="text-slate-400">
-              © 2025 LegalAI Assistant. All rights reserved.
+              © 2026 LegalAI Assistant. All rights reserved.
             </p>
           </div>
         </footer>
